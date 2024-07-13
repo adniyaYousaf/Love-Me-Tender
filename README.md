@@ -1,5 +1,12 @@
 ## Tender Management System
 
+### Prerequisites
+  Ensure the following are installed on your system before proceeding:
+
+  - Docker Engine
+  - Docker Compose
+  - Node.js and npm (Node Package Manager)
+
 
 ### ⏬ Installation and setup
 
