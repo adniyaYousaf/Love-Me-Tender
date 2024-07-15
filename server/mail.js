@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 import nodemailer from "nodemailer";
 require("dotenv").config();
+
 const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: process.env.MAIL_PORT,
@@ -20,7 +20,5 @@ const sendEmail = async ({ recipient, subject, message }) => {
         html: message,
     });
 };
-
-
 
 export default { sendEmail };
