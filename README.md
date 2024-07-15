@@ -8,6 +8,12 @@ Ensure the following are installed on your system before proceeding:
 - Docker Compose
 - Node.js and npm (Node Package Manager)
 
+## Deployed Website on render
+
+This is our deployed website link https://love-me-tender-51qa.onrender.com
+
+The render is on auto-deploy so it should render new changes to the website.
+
 ## ⏬ Installation and setup
 
 To run this website locally, follow the following instructions:
