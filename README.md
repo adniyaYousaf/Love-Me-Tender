@@ -1,4 +1,4 @@
-# Tender Management System
+# Love Me Tender - Tender Management System
 
 ## Prerequisites
 
@@ -39,5 +39,5 @@ npm run build
 5. Run the code
 
 ```sh
- npm start
+npm start
 ```
