@@ -4,7 +4,7 @@
         "user": "postgres",
         "password": "opensesame",
         "host": "localhost",
-        "database": "cyf-tms",
+        "database": "cyf_tms",
         "port": "5432"
     }
 }
