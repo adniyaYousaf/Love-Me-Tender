@@ -1,21 +1,3 @@
-DROP TABLE IF EXISTS users cascade;
-
-DROP TABLE IF EXISTS admins;
-
-DROP TABLE IF EXISTS bidder cascade;
-
-DROP TABLE IF EXISTS skill cascade;
-
-DROP TABLE IF EXISTS contractor cascade;
-
-DROP TABLE IF EXISTS bids cascade;
-
-DROP TABLE IF EXISTS tender cascade;
-
-DROP TABLE IF EXISTS tender_skill cascade;
-
-DROP TABLE IF EXISTS bidder_skill cascade;
-
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(120) NOT NULL UNIQUE,
