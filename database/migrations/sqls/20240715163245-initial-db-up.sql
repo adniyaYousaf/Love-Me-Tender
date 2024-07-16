@@ -44,7 +44,7 @@ CREATE TABLE tender (
     announcement_date DATE,
     deadline DATE,
     description VARCHAR(255),
-    cost INt,
+    cost DECIMAL(15, 2) CHECK (price >= 0),
     status VARCHAR(100),
     last_update TIMESTAMP
 );
