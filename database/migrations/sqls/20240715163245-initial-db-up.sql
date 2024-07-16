@@ -25,9 +25,6 @@ DROP TABLE IF EXISTS tender_skill cascade;
 DROP TABLE IF EXISTS bidder_skill cascade;
 
 
-
-
-
 CREATE TABLE users (id PRIMARY KEY AUTO INCREMENT,
                                           email VARCHAR(120) NOT NULL UNIQUE,
                                                             password_hash VARCHAR(60) NOT NULL,
@@ -82,3 +79,8 @@ CREATE TABLE tender_skill (tender_id,
                                                             FOREIGN KEY skill_id REFERENCES skill(id),
                                                                         FOREIGN KEY tender_id REFERENCES tender(id) );
                                                                                 
+CREATE TABLE bidder_skill (bidder_id,
+                                    skill_id INT,
+                                            PRIMARY KEY (bidder_id, skill_id),
+                                                            FOREIGN KEY skill_id REFERENCES skill(id),
+                                                                        FOREIGN KEY bidder_id REFERENCES bidder(id) );                                                                                
