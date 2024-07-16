@@ -1,13 +1,20 @@
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS admins;
-DROP TABLE IF EXISTS bidder CASCADE;
-DROP TABLE IF EXISTS skill CASCADE;
-DROP TABLE IF EXISTS contractor CASCADE;
-DROP TABLE IF EXISTS bids CASCADE;
-DROP TABLE IF EXISTS tender CASCADE;
-DROP TABLE IF EXISTS tender_skill CASCADE;
-DROP TABLE IF EXISTS bidder_skill CASCADE;
+DROP TABLE IF EXISTS users cascade;
 
+DROP TABLE IF EXISTS admins;
+
+DROP TABLE IF EXISTS bidder cascade;
+
+DROP TABLE IF EXISTS skill cascade;
+
+DROP TABLE IF EXISTS contractor cascade;
+
+DROP TABLE IF EXISTS bids cascade;
+
+DROP TABLE IF EXISTS tender cascade;
+
+DROP TABLE IF EXISTS tender_skill cascade;
+
+DROP TABLE IF EXISTS bidder_skill cascade;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -17,12 +24,12 @@ CREATE TABLE users (
 );
 
 CREATE TABLE admins (
-    id SERIAL PRIMARY KEY,
+    user_id INTEGER,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     cyf_role VARCHAR(100),
     last_update TIMESTAMP,
-    user_id INTEGER REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE bidder (
@@ -39,7 +46,7 @@ CREATE TABLE skill (
     skill_name VARCHAR(50)
 );
 
-CREATE TABLE contractor (
+CREATE TABLE buyer (
     user_id INTEGER PRIMARY KEY,
     company VARCHAR(100) NOT NULL,
     description VARCHAR(255) NOT NULL,
@@ -55,7 +62,7 @@ CREATE TABLE tender (
     announcement_date DATE,
     deadline DATE,
     description VARCHAR(255),
-    cost INT,
+    cost INt,
     status BOOLEAN,
     last_update TIMESTAMP
 );
