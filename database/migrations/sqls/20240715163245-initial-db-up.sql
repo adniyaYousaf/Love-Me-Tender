@@ -45,7 +45,7 @@ CREATE TABLE tender (
     deadline DATE,
     description VARCHAR(255),
     cost INt,
-    status BOOLEAN,
+    status VARCHAR(100),
     last_update TIMESTAMP
 );
 
