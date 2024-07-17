@@ -64,4 +64,3 @@ CREATE TABLE bidder_skill (
     FOREIGN KEY (skill_id) REFERENCES skill(skill_id),
     FOREIGN KEY (bidder_id) REFERENCES bidder(user_id)
 );
-
