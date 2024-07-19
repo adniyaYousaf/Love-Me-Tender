@@ -38,15 +38,18 @@ CREATE TABLE buyer (
 );
 
 CREATE TABLE tender (
-    id SERIAL PRIMARY KEY,
+    tender_id SERIAL PRIMARY KEY,
+    buyer_id INT,
     title VARCHAR(100),
     creation_date DATE,
     announcement_date DATE,
     deadline DATE,
-    description VARCHAR(255),
+    description VARCHAR(2000),
     cost DECIMAL(15, 2) CHECK (cost >= 0),
     status VARCHAR(100),
-    last_update TIMESTAMP
+    no_of_bids_recevied INT,
+    last_update TIMESTAMP,
+    FOREIGN KEY (buyer_id) REFERENCES buyer (user_id)
 );
 
 CREATE TABLE tender_skill (
@@ -54,7 +57,7 @@ CREATE TABLE tender_skill (
     skill_id INTEGER,
     PRIMARY KEY (tender_id, skill_id),
     FOREIGN KEY (skill_id) REFERENCES skill(skill_id),
-    FOREIGN KEY (tender_id) REFERENCES tender(id)
+    FOREIGN KEY (tender_id) REFERENCES tender (tender_id)
 );
 
 CREATE TABLE bidder_skill (
@@ -63,4 +66,20 @@ CREATE TABLE bidder_skill (
     PRIMARY KEY (bidder_id, skill_id),
     FOREIGN KEY (skill_id) REFERENCES skill(skill_id),
     FOREIGN KEY (bidder_id) REFERENCES bidder(user_id)
+);
+
+CREATE TABLE bids (
+    bid_id SERIAL PRIMARY KEY,
+    tender_id INTEGER,
+    bidder_id INTEGER,
+    buyer_id INTEGER,
+    bidding_date DATE,
+    status VARCHAR(100),
+    bidding_amount DECIMAL(15, 2) CHECK (bidding_amount >= 0),
+    cover_letter VARCHAR(255),
+    suggested_duration DATE,
+    attachments VARCHAR(255),
+    FOREIGN KEY (tender_id) REFERENCES tender (tender_id),
+    FOREIGN KEY (bidder_id) REFERENCES bidder (user_id),
+    FOREIGN KEY (buyer_id) REFERENCES buyer (user_id)
 );

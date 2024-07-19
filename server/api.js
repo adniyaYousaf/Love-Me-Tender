@@ -1,4 +1,5 @@
 import { Router } from "express";
+import db from "./db";
 
 const router = Router();
 
@@ -132,6 +133,17 @@ router.post("/publish-tenders", (req, res) => {
 	}
 
 	res.status(200).json({ message: "Form submitted successfully!" });
+});
+
+router.get("/buyerTender/:id", async (req, res) => {
+	const buyerId = req.params.id;
+
+	const result = await db.query(`SELECT * FROM tender WHERE buyer_id = ${buyerId}`);
+	result
+		? res.send(result.rows)
+		: res
+			.status(500)
+			.send({ success: "false", error: "Could not connect to database" });
 });
 
 export default router;
