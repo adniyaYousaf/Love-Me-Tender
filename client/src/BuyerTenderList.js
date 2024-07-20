@@ -14,7 +14,7 @@ const BuyerTenderList = (props) => {
             try {
                 const response = await fetch(`api/buyerTender/${props.buyerID}`);
                 if (!response.ok) {
-                    throw new Error("Buyer tenders not found!");
+                    throw new Error("Problem with the server!");
                 }
                 const data = await response.json();
                 setLoading(false);
