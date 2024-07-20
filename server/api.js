@@ -135,10 +135,10 @@ router.post("/publish-tenders", (req, res) => {
 	res.status(200).json({ message: "Form submitted successfully!" });
 });
 
-router.get("/buyerTender/:id", async (req, res) => {
-	const buyerId = req.params.id;
+router.get("/buyer-Tender", async (req, res) => {
+	// const buyerId = req.params.id;
 
-	const result = await db.query(`SELECT * FROM tender WHERE buyer_id = ${buyerId}`);
+	const result = await db.query("SELECT * FROM tender WHERE buyer_id limit = 25");
 	result
 		? res.send(result.rows)
 		: res

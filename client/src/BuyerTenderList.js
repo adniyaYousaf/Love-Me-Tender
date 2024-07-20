@@ -12,7 +12,7 @@ const BuyerTenderList = (props) => {
     useEffect(() => {
         const fetchBuyerTenders = async () => {
             try {
-                const response = await fetch(`api/buyerTender/${props.buyerID}`);
+                const response = await fetch("api/buyer-tender");
                 if (!response.ok) {
                     throw new Error("Problem with the server!");
                 }
@@ -37,7 +37,7 @@ const BuyerTenderList = (props) => {
     return (
         <>
             <h1>Buyer Tender List</h1>
-            <div className="tender-container"> {buyerTenders.slice(0, 24).map((tender, index) =>
+            <div className="tender-container"> {buyerTenders.map((tender, index) =>
                 <div className="tender-card" key={index}>
                     <a href="/" className="tender-title">{tender.title}</a>
                     <p>Tender created on: {dateFormat(tender.creation_date)}</p>
