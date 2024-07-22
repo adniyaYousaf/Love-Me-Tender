@@ -41,6 +41,13 @@ npm install
 ```sh
 node ../node_modules/db-migrate/bin/db-migrate up
  ```
+To modify database for example to create a new table, run the command below and add DB modifications in that new migration.
+
+Then run above command again.
+
+```sh
+node ../node_modules/db-migrate/bin/db-migrate create created-new-table --sql-file
+ ```
 
 5. Run the build command
 

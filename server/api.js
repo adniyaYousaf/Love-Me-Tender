@@ -87,7 +87,7 @@ router.get("/skills", (req, res) => {
 });
 
 router.post("/publish-tenders", (req, res) => {
-    const formData = req.body;
+	const formData = req.body;
 
 	const newErrors = [];
 
@@ -135,15 +135,17 @@ router.post("/publish-tenders", (req, res) => {
 	res.status(200).json({ message: "Form submitted successfully!" });
 });
 
-router.get("/buyer-Tender", async (req, res) => {
-	// const buyerId = req.params.id;
+router.get("/buyer-Tender/page", async (req, res) => {
+	const buyerId = 1;
+	const page = req.params.page;
+	const itemsPerPage = 25;
 
-	const result = await db.query("SELECT * FROM tender WHERE buyer_id limit = 25");
+	const result = await db.query(`SELECT * FROM buyer WHERE buyerId= ${buyerId} LIMIT ${itemsPerPage} OFFSET ${(page - 1) * itemsPerPage}`);
 	result
 		? res.send(result.rows)
-		: res
-			.status(500)
-			.send({ success: "false", error: "Could not connect to database" });
+		:
+		res.status(500)
+			.send("Error! Can't get the buyer list");
 });
 
 export default router;

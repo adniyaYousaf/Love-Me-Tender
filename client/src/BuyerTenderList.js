@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const BuyerTenderList = (props) => {
+const BuyerTenderList = () => {
     const [loading, setLoading] = useState(true);
     const [buyerTenders, setBuyerTenders] = useState([]);
     const [errorMsg, setErrorMsg] = useState(null);
@@ -12,7 +12,7 @@ const BuyerTenderList = (props) => {
     useEffect(() => {
         const fetchBuyerTenders = async () => {
             try {
-                const response = await fetch("api/buyer-tender");
+                const response = await fetch("api/buyer-tender/1");
                 if (!response.ok) {
                     throw new Error("Problem with the server!");
                 }
@@ -24,7 +24,7 @@ const BuyerTenderList = (props) => {
             }
         };
         fetchBuyerTenders();
-    }, [props.buyerID]);
+    }, []);
 
     if (errorMsg !== null) {
         return <div>Something went wrong!</div>;
@@ -36,7 +36,7 @@ const BuyerTenderList = (props) => {
 
     return (
         <>
-            <h1>Buyer Tender List</h1>
+            <h1>Buyer Tenders List</h1>
             <div className="tender-container"> {buyerTenders.map((tender, index) =>
                 <div className="tender-card" key={index}>
                     <a href="/" className="tender-title">{tender.title}</a>
