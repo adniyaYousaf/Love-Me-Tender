@@ -27,7 +27,7 @@ const BuyerTenderList = () => {
     }, []);
 
     if (errorMsg !== null) {
-        return <div>Something went wrong!</div>;
+        return <div>{errorMsg}</div>;
     }
 
     if (loading) {

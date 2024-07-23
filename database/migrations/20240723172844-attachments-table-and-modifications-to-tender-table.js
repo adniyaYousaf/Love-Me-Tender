@@ -1,3 +1,5 @@
+'use strict';
+
 var dbm;
 var type;
 var seed;
@@ -17,7 +19,7 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  var filePath = path.join(__dirname, 'sqls', '20240722104637-created-new-tables-up.sql');
+  var filePath = path.join(__dirname, 'sqls', '20240723172844-attachments-table-and-modifications-to-tender-table-up.sql');
   return new Promise( function( resolve, reject ) {
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
       if (err) return reject(err);
@@ -32,7 +34,7 @@ exports.up = function(db) {
 };
 
 exports.down = function(db) {
-  var filePath = path.join(__dirname, 'sqls', '20240722104637-created-new-tables-down.sql');
+  var filePath = path.join(__dirname, 'sqls', '20240723172844-attachments-table-and-modifications-to-tender-table-down.sql');
   return new Promise( function( resolve, reject ) {
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
       if (err) return reject(err);
