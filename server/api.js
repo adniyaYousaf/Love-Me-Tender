@@ -135,17 +135,17 @@ router.post("/publish-tenders", (req, res) => {
 	res.status(200).json({ message: "Form submitted successfully!" });
 });
 
-router.get("/buyer-Tender/page", async (req, res) => {
+router.get("/buyer-tender/:page", async (req, res) => {
 	const buyerId = 1;
 	const page = req.params.page;
 	const itemsPerPage = 25;
 
-	const result = await db.query(`SELECT * FROM buyer WHERE buyerId= ${buyerId} LIMIT ${itemsPerPage} OFFSET ${(page - 1) * itemsPerPage}`);
+	const result = await db.query("SELECT * FROM tender WHERE buyer_id= $1 LIMIT $2 OFFSET ($3 - 1) * $2", [buyerId, itemsPerPage, page]);
 	result
 		? res.send(result.rows)
 		:
 		res.status(500)
-			.send("Error! Can't get the buyer list");
+			.send({ code: "SERVER_ERROR" });
 });
 
 export default router;
