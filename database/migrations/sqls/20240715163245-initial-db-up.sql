@@ -38,15 +38,15 @@ CREATE TABLE buyer (
 );
 
 CREATE TABLE tender (
-    tender_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(100),
     creation_date DATE,
     announcement_date DATE,
     deadline DATE,
-    description VARCHAR(200),
+    description VARCHAR(255),
     cost DECIMAL(15, 2) CHECK (cost >= 0),
     status VARCHAR(100),
-    last_update TIMESTAMP,
+    last_update TIMESTAMP
 );
 
 CREATE TABLE tender_skill (
@@ -54,7 +54,7 @@ CREATE TABLE tender_skill (
     skill_id INTEGER,
     PRIMARY KEY (tender_id, skill_id),
     FOREIGN KEY (skill_id) REFERENCES skill(skill_id),
-    FOREIGN KEY (tender_id) REFERENCES tender (tender_id)
+    FOREIGN KEY (tender_id) REFERENCES tender(id)
 );
 
 CREATE TABLE bidder_skill (
