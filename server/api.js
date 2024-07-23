@@ -150,7 +150,7 @@ router.get("/buyer-tender", async (req, res) => {
 });
 
 
-router.get("/bidder-bids", async (req, res) => {
+router.get("/bidder-bid", async (req, res) => {
 	const bidderId = 1;
 	let page = parseInt(req.query.page) || 1;
 	const itemsPerPage = 25;
