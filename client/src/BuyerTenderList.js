@@ -12,7 +12,7 @@ const BuyerTenderList = () => {
     useEffect(() => {
         const fetchBuyerTenders = async () => {
             try {
-                const response = await fetch("api/buyer-tender/1");
+                const response = await fetch("api/buyer-tender?page=1");
                 if (!response.ok) {
                     throw new Error("Problem with the server!");
                 }
