@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import tenderBiddingList  from "./TenderBiddingList";
 
 
-const BuyerTenderList = () => {
+const TenderBiddingList = (id) => {
     const [loading, setLoading] = useState(true);
-    const [buyerTenders, setBuyerTenders] = useState([]);
+    const [tenderBids, setTenderbids] = useState([]);
     const [errorMsg, setErrorMsg] = useState(null);
 
     function dateFormat(date) {
@@ -14,19 +13,19 @@ const BuyerTenderList = () => {
     useEffect(() => {
         const fetchBuyerTenders = async () => {
             try {
-                const response = await fetch("api/buyer-tender/1");
+                const response = await fetch(`api/single-tender?page=1&id=${id}`);
                 if (!response.ok) {
                     throw new Error("Problem with the server!");
                 }
                 const data = await response.json();
                 setLoading(false);
-                setBuyerTenders(data);
+                setTenderbids(data.result);
             } catch (error) {
                 setErrorMsg(error.message);
             }
         };
         fetchBuyerTenders();
-    }, []);
+    }, [id]);
 
     if (errorMsg !== null) {
         return <div>{errorMsg}</div>;
@@ -38,8 +37,8 @@ const BuyerTenderList = () => {
 
     return (
         <>
-            <h1>Buyer Tenders List</h1>
-            <div className="tender-container"> {buyerTenders.map((tender, index) =>
+            <h1>Tender Biddings</h1>
+            <div className="tender-container"> {tenderBids.map((tender, index) =>
                 <div className="tender-card" key={index}>
                     <a href="/" className="tender-title">{tender.title}</a>
                     <p>Tender created on: {dateFormat(tender.creation_date)}</p>
@@ -56,4 +55,4 @@ const BuyerTenderList = () => {
     );
 };
 
-export default BuyerTenderList;
+export default TenderBiddingList;

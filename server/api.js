@@ -164,4 +164,25 @@ router.get("/bidder-bid", async (req, res) => {
 			.send({ code: "SERVER_ERROR" });
 });
 
+router.get("/single-tender", async (req, res) => {
+	const tenderID = parseInt(req.query.id);
+	let page = parseInt(req.query.page) || 1;
+	const itemsPerPage = 10;
+	const totalBids = await db.query("SELECT COUNT(tender_id) FROM bid WHERE tender_id = $1", [tenderID]);
+	const totalPages = Math.ceil(totalBids.rows[0].count / itemsPerPage);
+	const offset = (page - 1) * itemsPerPage;
+
+	const result = await db.query("SELECT * FROM bid WHERE tender_id = $1 LIMIT $2 OFFSET $3", [tenderID, itemsPerPage, offset]);
+	result
+		? res.send({
+			"result": result.rows, "pagination": {
+				"itemsPerPage": 10,
+				"currentPage": 1,
+				"totalPages": totalPages,
+			},
+		})
+		:
+		res.status(500)
+			.send({ code: "SERVER_ERROR" });
+});
 export default router;
