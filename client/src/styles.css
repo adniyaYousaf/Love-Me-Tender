@@ -97,3 +97,15 @@ button:hover {
 	justify-content: center;
 	gap: 1rem;
 }
+
+.bid-card {
+	text-decoration: none;
+	color: black;
+	width: 70rem;
+	height: auto;
+	background-color: #e9e9e9;
+	padding: 1rem;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	padding-block: 2rem;
+}
