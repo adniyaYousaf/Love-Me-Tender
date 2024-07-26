@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { Router } from "express";
 import db from "./db";
 
@@ -75,63 +76,54 @@ router.get("/buyer-tender", async (req, res) => {
 	const buyerId = 1;
 	let page = parseInt(req.query.page) || 1;
 	const itemsPerPage = 25;
-
 	const offset = (page - 1) * itemsPerPage;
+	const totalBuyerTenders = await db.query(
+		"SELECT COUNT(buyer_id) FROM bid WHERE buyer_id = $1",
+		[buyerId]
+	);
+	const totalPages = Math.ceil(totalBuyerTenders.rows[0].count / itemsPerPage);
 	const result = await db.query(
 		"SELECT * FROM tender WHERE buyer_id = $1 LIMIT $2 OFFSET $3",
 		[buyerId, itemsPerPage, offset]
 	);
+
 	result
-		? res.send(result.rows)
+		? res.send({
+				result: result.rows,
+				pagination: {
+					itemsPerPage: 25,
+					currentPage: 1,
+					totalPages: totalPages,
+				},
+		  })
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
 router.get("/bidder-bid", async (req, res) => {
-	const bidderId = 1;
 	let page = parseInt(req.query.page) || 1;
+	const bidderId = 1;
 	const itemsPerPage = 25;
-
+	const totalBiddings = await db.query(
+		"SELECT COUNT(bidder_id) FROM bid WHERE bidder_id = $1",
+		[bidderId]
+	);
+	const totalPages = Math.ceil(totalBiddings.rows[0].count / itemsPerPage);
 	const offset = (page - 1) * itemsPerPage;
+
 	const result = await db.query(
 		"SELECT * FROM bid WHERE bidder_id = $1 LIMIT $2 OFFSET $3",
 		[bidderId, itemsPerPage, offset]
 	);
 	result
-		? res.send(result.rows)
+		? res.send({
+				results: result.rows,
+				pagination: {
+					itemsPerPage: 25,
+					currentPage: 1,
+					totalPages: totalPages,
+				},
+		  })
 		: res.status(500).send({ code: "SERVER_ERROR" });
-});
-
-router.get("/tenders", async (req, res) => {
-	const page = parseInt(req.query.page, 10) || 1;
-	const limit = 25;
-	const offset = (page - 1) * limit;
-
-	const countSql = "SELECT COUNT(*) FROM tender";
-	const dataSql = `
-		SELECT id, title, creation_date, announcement_date, deadline, status 
-		FROM tender 
-		ORDER BY creation_date DESC 
-		LIMIT $1 OFFSET $2
-	`;
-	try {
-		const countResult = await db.query(countSql);
-		const totalItems = parseInt(countResult.rows[0].count, 10);
-		const totalPages = Math.ceil(totalItems / limit);
-
-		const dataResult = await db.query(dataSql, [limit, offset]);
-		const tenders = dataResult.rows;
-
-		res.status(200).json({
-			results: tenders,
-			pagination: {
-				itemsPerPage: limit,
-				currentPage: page,
-				totalPages,
-			},
-		});
-	} catch (err) {
-		res.status(500).json({ code: "SERVER_ERROR" });
-	}
 });
 
 export default router;
