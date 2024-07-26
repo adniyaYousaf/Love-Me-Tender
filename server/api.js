@@ -2,6 +2,7 @@ import { Router } from "express";
 import db from "./db";
 
 const router = Router();
+const itemsPerPage = 25;
 
 router.get("/", (_, res) => {
 	res.status(200).json({ message: "WELCOME TO LOVE ME TENDER SITE" });
@@ -138,7 +139,6 @@ router.post("/publish-tenders", (req, res) => {
 router.get("/buyer-tender", async (req, res) => {
 	const buyerId = 1;
 	let page = parseInt(req.query.page) || 1;
-	const itemsPerPage = 25;
 	const offset = (page - 1) * itemsPerPage;
 	const totalBuyerTenders = await db.query("SELECT COUNT(buyer_id) FROM bid WHERE buyer_id = $1", [buyerId]);
 	const totalPages = Math.ceil(totalBuyerTenders.rows[0].count / itemsPerPage);
@@ -146,9 +146,9 @@ router.get("/buyer-tender", async (req, res) => {
 
 	result
 		? res.send({
-			"result": result.rows, "pagination": {
-				"itemsPerPage": 25,
-				"currentPage": 1,
+			"results": result.rows, "pagination": {
+				"itemsPerPage": itemsPerPage,
+				"currentPage": page,
 				"totalPages": totalPages,
 			},
 		})
@@ -160,7 +160,6 @@ router.get("/buyer-tender", async (req, res) => {
 router.get("/bidder-bid", async (req, res) => {
 	let page = parseInt(req.query.page) || 1;
 	const bidderId = 1;
-	const itemsPerPage = 25;
 	const totalBiddings = await db.query("SELECT COUNT(bidder_id) FROM bid WHERE bidder_id = $1", [bidderId]);
 	const totalPages = Math.ceil(totalBiddings.rows[0].count / itemsPerPage);
 	const offset = (page - 1) * itemsPerPage;
@@ -168,31 +167,9 @@ router.get("/bidder-bid", async (req, res) => {
 	const result = await db.query("SELECT * FROM bid WHERE bidder_id = $1 LIMIT $2 OFFSET $3", [bidderId, itemsPerPage, offset]);
 	result
 		? res.send({
-			"result": result.rows, "pagination": {
-				"itemsPerPage": 25,
-				"currentPage": 1,
-				"totalPages": totalPages,
-			},
-		})
-		:
-		res.status(500)
-			.send({ code: "SERVER_ERROR" });
-});
-
-router.get("/single-tender", async (req, res) => {
-	const tenderID = parseInt(req.query.id);
-	let page = parseInt(req.query.page) || 1;
-	const itemsPerPage = 10;
-	const totalBids = await db.query("SELECT COUNT(tender_id) FROM bid WHERE tender_id = $1", [tenderID]);
-	const totalPages = Math.ceil(totalBids.rows[0].count / itemsPerPage);
-	const offset = (page - 1) * itemsPerPage;
-
-	const result = await db.query("SELECT * FROM bid WHERE tender_id = $1 LIMIT $2 OFFSET $3", [tenderID, itemsPerPage, offset]);
-	result
-		? res.send({
-			"result": result.rows, "pagination": {
-				"itemsPerPage": 10,
-				"currentPage": 1,
+			"results": result.rows, "pagination": {
+				"itemsPerPage": itemsPerPage,
+				"currentPage": page,
 				"totalPages": totalPages,
 			},
 		})

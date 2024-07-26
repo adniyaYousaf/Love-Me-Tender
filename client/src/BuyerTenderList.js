@@ -37,6 +37,7 @@ const BuyerTenderList = () => {
     if (buyerTenders.length === 0) {
         return <div>No tender published yet!!</div>;
     }
+
     return (
         <>
             <h1>Buyer Tenders List</h1>
