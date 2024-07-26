@@ -155,6 +155,7 @@ router.get("/buyer-tender", async (req, res) => {
 		:
 		res.status(500)
 			.send({ code: "SERVER_ERROR" });
+	
 });
 
 router.get("/bidder-bid", async (req, res) => {
