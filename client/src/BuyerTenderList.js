@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
 const BuyerTenderList = () => {
-    const [loading, setLoading] = useState(true);
-    const [buyerTenders, setBuyerTenders] = useState([]);
-    const [errorMsg, setErrorMsg] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [buyerTenders, setBuyerTenders] = useState([]);
+	const [errorMsg, setErrorMsg] = useState(null);
 
-    function dateFormat(date) {
-        return date.split("T")[0];
-    }
+	function dateFormat(date) {
+		return date.split("T")[0];
+	}
 
     useEffect(() => {
         const fetchBuyerTenders = async () => {
@@ -26,13 +26,13 @@ const BuyerTenderList = () => {
         fetchBuyerTenders();
     }, []);
 
-    if (errorMsg !== null) {
-        return <div>{errorMsg}</div>;
-    }
+	if (errorMsg !== null) {
+		return <div>{errorMsg}</div>;
+	}
 
-    if (loading) {
-        return <div>Loading!!</div>;
-    }
+	if (loading) {
+		return <div>Loading!!</div>;
+	}
 
     if (buyerTenders.length === 0) {
         return <div>No tender published yet!!</div>;
