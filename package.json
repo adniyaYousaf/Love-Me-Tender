@@ -51,6 +51,7 @@
 		"db-migrate": "^0.11.14",
 		"del-cli": "^5.1.0",
 		"eslint": "^8.50.0",
+		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-jsx-a11y": "^6.7.1",
 		"eslint-plugin-react": "^7.33.2",
 		"eslint-plugin-react-hooks": "^4.6.0",

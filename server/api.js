@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Router } from "express";
 import db from "./db";
 
@@ -161,31 +162,37 @@ router.get("/tender/:id", async (req, res) => {
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
-router.get("/tender/:id", async (req, res) => {
-	const tenderID = parseInt(req.params.id);
-	let page = parseInt(req.query.page) || 1;
-	const itemsPerPage = 10;
-	const totalBids = await db.query(
-		"SELECT COUNT(tender_id) FROM bid WHERE tender_id = $1",
-		[tenderID]
-	);
-	const totalPages = Math.ceil(totalBids.rows[0].count / itemsPerPage);
-	const offset = (page - 1) * itemsPerPage;
+router.post("/bid-status/:bidId/:tenderId", async (req, res) => {
+	const bidId = parseInt(req.params.bidId);
+	const tenderId = parseInt(req.params.tenderId);
+	let status = req.body.status;
 
-	const result = await db.query(
-		"SELECT * FROM bid WHERE tender_id = $1 LIMIT $2 OFFSET $3",
-		[tenderID, itemsPerPage, offset]
-	);
-	result
-		? res.send({
-				results: result.rows,
-				pagination: {
-					itemsPerPage: 10,
-					currentPage: page,
-					totalPages: totalPages,
-				},
-		  })
-		: res.status(500).send({ code: "SERVER_ERROR" });
+	if (status === "Accepted") {
+		const reject = "Rejected";
+
+		const result = await db.query(
+			"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
+			[status, tenderId, bidId]
+		);
+
+		const rejectedBids = await db.query(
+			"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id != $3;",
+			[reject, tenderId, bidId]
+		);
+
+		result && rejectedBids
+			? res.send({ code: "Success" })
+			: res.status(500).send({ code: "SERVER_ERROR" });
+	} else {
+		const result = await db.query(
+			"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
+			[status, tenderId, bidId]
+		);
+
+		result
+			? res.send({ code: "Success" })
+			: res.status(500).send({ code: "SERVER_ERROR" });
+	}
 });
 
 export default router;
