@@ -3,6 +3,7 @@ import { Router } from "express";
 import db from "./db";
 
 const router = Router();
+const itemsPerPage = 25;
 
 router.get("/", (_, res) => {
 	res.status(200).json({ message: "WELCOME TO LOVE ME TENDER SITE" });
@@ -75,7 +76,6 @@ router.post("/publish-tenders", (req, res) => {
 router.get("/buyer-tender", async (req, res) => {
 	const buyerId = 1;
 	let page = parseInt(req.query.page) || 1;
-	const itemsPerPage = 25;
 	const offset = (page - 1) * itemsPerPage;
 	const totalBuyerTenders = await db.query(
 		"SELECT COUNT(buyer_id) FROM bid WHERE buyer_id = $1",
@@ -89,10 +89,10 @@ router.get("/buyer-tender", async (req, res) => {
 
 	result
 		? res.send({
-				result: result.rows,
+				results: result.rows,
 				pagination: {
-					itemsPerPage: 25,
-					currentPage: 1,
+					itemsPerPage: itemsPerPage,
+					currentPage: page,
 					totalPages: totalPages,
 				},
 		  })
@@ -118,8 +118,8 @@ router.get("/bidder-bid", async (req, res) => {
 		? res.send({
 				results: result.rows,
 				pagination: {
-					itemsPerPage: 25,
-					currentPage: 1,
+					itemsPerPage: itemsPerPage,
+					currentPage: page,
 					totalPages: totalPages,
 				},
 		  })

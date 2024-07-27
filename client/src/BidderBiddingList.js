@@ -8,7 +8,6 @@ const BidderBiddingList = () => {
 	function dateFormat(date) {
 		return date.split("T")[0];
 	}
-
 	useEffect(() => {
 		const fetchBidderBids = async () => {
 			try {
