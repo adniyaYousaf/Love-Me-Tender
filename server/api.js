@@ -162,36 +162,67 @@ router.get("/tender/:id", async (req, res) => {
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
-router.post("/bid-status/:bidId/:tenderId", async (req, res) => {
-	const bidId = parseInt(req.params.bidId);
-	const tenderId = parseInt(req.params.tenderId);
-	let status = req.body.status;
+router.post("/bid/:bidId/status", async (req, res) => {
+	const bidId = parseInt(req.params.bidId, 10);
+	const status = req.body.status;
+	const validStatuses = ["Awarded", "Rejected", "Withdraw", "In review"];
 
-	if (status === "Accepted") {
-		const reject = "Rejected";
+	if (!validStatuses.includes(status)) {
+		return res.status(400).send({ code: "INVALID_STATUS" });
+	}
 
-		const result = await db.query(
-			"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
-			[status, tenderId, bidId]
+	try {
+		await db.query("BEGIN");
+
+		const tenderResult = await db.query(
+			"SELECT tender_id FROM bid WHERE bid_id = $1;",
+			[bidId]
 		);
 
-		const rejectedBids = await db.query(
-			"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id != $3;",
-			[reject, tenderId, bidId]
-		);
+		if (tenderResult.rowCount === 0) {
+			await db.query("ROLLBACK");
+			return res.status(404).send({ code: "BID_NOT_FOUND" });
+		}
 
-		result && rejectedBids
-			? res.send({ code: "Success" })
-			: res.status(500).send({ code: "SERVER_ERROR" });
-	} else {
-		const result = await db.query(
-			"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
-			[status, tenderId, bidId]
-		);
+		const tenderId = parseInt(tenderResult.rows[0].tender_id, 10);
 
-		result
-			? res.send({ code: "Success" })
-			: res.status(500).send({ code: "SERVER_ERROR" });
+		if (status === "Awarded") {
+			const rejectStatus = "Rejected";
+
+			const awardBidResult = await db.query(
+				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
+				[status, tenderId, bidId]
+			);
+
+			const rejectOtherBidsResult = await db.query(
+				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id != $3;",
+				[rejectStatus, tenderId, bidId]
+			);
+
+			if (awardBidResult.rowCount > 0 && rejectOtherBidsResult.rowCount > 0) {
+				await db.query("COMMIT");
+				return res.status(200).send({ code: "Success" });
+			} else {
+				await db.query("ROLLBACK");
+				return res.status(500).send({ code: "SERVER_ERROR" });
+			}
+		} else {
+			const updateBidResult = await db.query(
+				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
+				[status, tenderId, bidId]
+			);
+
+			if (updateBidResult.rowCount > 0) {
+				await db.query("COMMIT");
+				return res.status(200).send({ code: "Success" });
+			} else {
+				await db.query("ROLLBACK");
+				return res.status(500).send({ code: "SERVER_ERROR" });
+			}
+		}
+	} catch (error) {
+		await db.query("ROLLBACK");
+		return res.status(500).send({ code: "SERVER_ERROR", error: error.message });
 	}
 });
 
