@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { Router } from "express";
 import db from "./db";
 
@@ -135,30 +134,32 @@ router.get("/tenders", async (req, res) => {
 	}
 });
 
-router.get("/tender/:id", async (req, res) => {
-	const tenderID = parseInt(req.params.id);
+router.get("/bid/:tenderId", async (req, res) => {
+	const tenderID = parseInt(req.params.tenderId);
 	let page = parseInt(req.query.page) || 1;
 	const itemsPerPage = 10;
-	const totalBids = await db.query(
+
+	const allBidsPerTender = await db.query(
 		"SELECT COUNT(tender_id) FROM bid WHERE tender_id = $1",
 		[tenderID]
 	);
-	const totalPages = Math.ceil(totalBids.rows[0].count / itemsPerPage);
+	const totalPages = Math.ceil(allBidsPerTender.rows[0].count / itemsPerPage);
 	const offset = (page - 1) * itemsPerPage;
 
-	const result = await db.query(
+	const totalBidsResults = await db.query(
 		"SELECT * FROM bid WHERE tender_id = $1 LIMIT $2 OFFSET $3",
 		[tenderID, itemsPerPage, offset]
 	);
-	result
+
+	totalBidsResults
 		? res.send({
-				results: result.rows,
-				pagination: {
-					itemsPerPage: 10,
-					currentPage: page,
-					totalPages: totalPages,
-				},
-		  })
+			results: totalBidsResults.rows,
+			pagination: {
+				itemsPerPage: 10,
+				currentPage: page,
+				totalPages: totalPages,
+			},
+		})
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
@@ -201,7 +202,7 @@ router.post("/bid/:bidId/status", async (req, res) => {
 
 			if (awardBidResult.rowCount > 0 && rejectOtherBidsResult.rowCount > 0) {
 				await db.query("COMMIT");
-				return res.status(200).send({ code: "Success" });
+				return res.status(200);
 			} else {
 				await db.query("ROLLBACK");
 				return res.status(500).send({ code: "SERVER_ERROR" });
@@ -214,7 +215,7 @@ router.post("/bid/:bidId/status", async (req, res) => {
 
 			if (updateBidResult.rowCount > 0) {
 				await db.query("COMMIT");
-				return res.status(200).send({ code: "Success" });
+				return res.status(200);
 			} else {
 				await db.query("ROLLBACK");
 				return res.status(500).send({ code: "SERVER_ERROR" });
@@ -222,7 +223,7 @@ router.post("/bid/:bidId/status", async (req, res) => {
 		}
 	} catch (error) {
 		await db.query("ROLLBACK");
-		return res.status(500).send({ code: "SERVER_ERROR", error: error.message });
+		return res.status(500).send({ code: "SERVER_ERROR" });
 	}
 });
 
