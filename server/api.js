@@ -1,5 +1,5 @@
 import { Router } from "express";
-import db from "./db";
+import db, { pool } from "./db";
 
 const router = Router();
 
@@ -172,58 +172,67 @@ router.post("/bid/:bidId/status", async (req, res) => {
 		return res.status(400).send({ code: "INVALID_STATUS" });
 	}
 
-	try {
-		await db.query("BEGIN");
+	let client;
 
-		const tenderResult = await db.query(
+	try {
+		client = await pool.connect();
+
+		await client.query("BEGIN");
+
+		const tenderResult = await client.query(
 			"SELECT tender_id FROM bid WHERE bid_id = $1;",
 			[bidId]
 		);
 
 		if (tenderResult.rowCount === 0) {
-			await db.query("ROLLBACK");
+			await client.query("ROLLBACK");
 			return res.status(404).send({ code: "BID_NOT_FOUND" });
 		}
 
-		const tenderId = parseInt(tenderResult.rows[0].tender_id, 10);
+		const tenderId = parseInt(tenderResult.rows[0].tender_id);
 
 		if (status === "Awarded") {
 			const rejectStatus = "Rejected";
-
-			const awardBidResult = await db.query(
+			const awardBidResult = await client.query(
 				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
 				[status, tenderId, bidId]
 			);
 
-			const rejectOtherBidsResult = await db.query(
+			const rejectOtherBidsResult = await client.query(
 				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id != $3;",
 				[rejectStatus, tenderId, bidId]
 			);
 
-			if (awardBidResult.rowCount > 0 && rejectOtherBidsResult.rowCount > 0) {
-				await db.query("COMMIT");
-				return res.status(200);
+			if (awardBidResult.rowCount > 0 || rejectOtherBidsResult.rowCount > 0) {
+				await client.query("COMMIT");
+				return res.status(200).send({ code: "SUCCESS" });
 			} else {
-				await db.query("ROLLBACK");
+				await client.query("ROLLBACK");
 				return res.status(500).send({ code: "SERVER_ERROR" });
 			}
 		} else {
-			const updateBidResult = await db.query(
+			const updateBidResult = await client.query(
 				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
 				[status, tenderId, bidId]
 			);
 
 			if (updateBidResult.rowCount > 0) {
-				await db.query("COMMIT");
-				return res.status(200);
+				await client.query("COMMIT");
+				return res.status(200).send({ code: "SUCCESS" });
 			} else {
-				await db.query("ROLLBACK");
+				await client.query("ROLLBACK");
 				return res.status(500).send({ code: "SERVER_ERROR" });
 			}
 		}
 	} catch (error) {
-		await db.query("ROLLBACK");
-		return res.status(500).send({ code: "SERVER_ERROR" });
+		if (client) {
+			await client.query("ROLLBACK");
+		}
+		return res.status(500).send({ code: "SERVER_ERROR", error: error.message });
+	} finally {
+		if (client) {
+			client.release();
+		}
 	}
 });
 
