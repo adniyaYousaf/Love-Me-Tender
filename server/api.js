@@ -134,8 +134,8 @@ router.get("/tenders", async (req, res) => {
 	}
 });
 
-router.get("/bid/:tenderId", async (req, res) => {
-	const tenderID = parseInt(req.params.tenderId);
+router.get("/bid", async (req, res) => {
+	const tenderID = parseInt(req.query.tender_id);
 	let page = parseInt(req.query.page) || 1;
 	const itemsPerPage = 10;
 
