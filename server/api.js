@@ -139,11 +139,11 @@ router.get("/bid/:tenderId", async (req, res) => {
 	let page = parseInt(req.query.page) || 1;
 	const itemsPerPage = 10;
 
-	const allBidsPerTender = await db.query(
+	const totalBidsPerTender = await db.query(
 		"SELECT COUNT(tender_id) FROM bid WHERE tender_id = $1",
 		[tenderID]
 	);
-	const totalPages = Math.ceil(allBidsPerTender.rows[0].count / itemsPerPage);
+	const totalPages = Math.ceil(totalBidsPerTender.rows[0].count / itemsPerPage);
 	const offset = (page - 1) * itemsPerPage;
 
 	const totalBidsResults = await db.query(
@@ -153,13 +153,13 @@ router.get("/bid/:tenderId", async (req, res) => {
 
 	totalBidsResults
 		? res.send({
-			results: totalBidsResults.rows,
-			pagination: {
-				itemsPerPage: 10,
-				currentPage: page,
-				totalPages: totalPages,
-			},
-		})
+				results: totalBidsResults.rows,
+				pagination: {
+					itemsPerPage: 10,
+					currentPage: page,
+					totalPages: totalPages,
+				},
+		  })
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
