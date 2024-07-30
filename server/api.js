@@ -1,6 +1,7 @@
 import { Router } from "express";
-import db from "./db";
+import db, { pool } from "./db";
 
+const itemsPerPage = 25;
 const router = Router();
 
 router.get("/", (_, res) => {
@@ -74,30 +75,56 @@ router.post("/publish-tenders", (req, res) => {
 router.get("/buyer-tender", async (req, res) => {
 	const buyerId = 1;
 	let page = parseInt(req.query.page) || 1;
-	const itemsPerPage = 25;
-
 	const offset = (page - 1) * itemsPerPage;
+
+	const totalBuyerTenders = await db.query(
+		"SELECT COUNT(buyer_id) FROM bid WHERE buyer_id = $1",
+		[buyerId]
+	);
+	const totalPages = Math.ceil(totalBuyerTenders.rows[0].count / itemsPerPage);
+
 	const result = await db.query(
 		"SELECT * FROM tender WHERE buyer_id = $1 LIMIT $2 OFFSET $3",
 		[buyerId, itemsPerPage, offset]
 	);
+
 	result
-		? res.send(result.rows)
+		? res.send({
+				results: result.rows,
+				pagination: {
+					itemsPerPage: itemsPerPage,
+					currentPage: page,
+					totalPages: totalPages,
+				},
+		  })
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
 router.get("/bidder-bid", async (req, res) => {
 	const bidderId = 1;
-	let page = parseInt(req.query.page) || 1;
-	const itemsPerPage = 25;
-
+	const page = parseInt(req.query.page) || 1;
 	const offset = (page - 1) * itemsPerPage;
+
+	const totalBiddings = await db.query(
+		"SELECT COUNT(bidder_id) FROM bid WHERE bidder_id = $1",
+		[bidderId]
+	);
+	const totalPages = Math.ceil(totalBiddings.rows[0].count / itemsPerPage);
+
 	const result = await db.query(
 		"SELECT * FROM bid WHERE bidder_id = $1 LIMIT $2 OFFSET $3",
 		[bidderId, itemsPerPage, offset]
 	);
+
 	result
-		? res.send(result.rows)
+		? res.send({
+				results: result.rows,
+				pagination: {
+					itemsPerPage: itemsPerPage,
+					currentPage: page,
+					totalPages: totalPages,
+				},
+		  })
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
@@ -131,6 +158,108 @@ router.get("/tenders", async (req, res) => {
 		});
 	} catch (err) {
 		res.status(500).json({ code: "SERVER_ERROR" });
+	}
+});
+
+router.get("/bid", async (req, res) => {
+	const tenderID = parseInt(req.query.tender_id);
+	let page = parseInt(req.query.page) || 1;
+	const itemsPerPage = 10;
+
+	const totalBidsPerTender = await db.query(
+		"SELECT COUNT(tender_id) FROM bid WHERE tender_id = $1",
+		[tenderID]
+	);
+	const totalPages = Math.ceil(totalBidsPerTender.rows[0].count / itemsPerPage);
+	const offset = (page - 1) * itemsPerPage;
+
+	const totalBidsResults = await db.query(
+		"SELECT * FROM bid WHERE tender_id = $1 LIMIT $2 OFFSET $3",
+		[tenderID, itemsPerPage, offset]
+	);
+
+	totalBidsResults
+		? res.send({
+				results: totalBidsResults.rows,
+				pagination: {
+					itemsPerPage: 10,
+					currentPage: page,
+					totalPages: totalPages,
+				},
+		  })
+		: res.status(500).send({ code: "SERVER_ERROR" });
+});
+
+router.post("/bid/:bidId/status", async (req, res) => {
+	const bidId = parseInt(req.params.bidId, 10);
+	const status = req.body.status;
+	const validStatuses = ["Awarded", "Rejected", "Withdraw", "In review"];
+
+	if (!validStatuses.includes(status)) {
+		return res.status(400).send({ code: "INVALID_STATUS" });
+	}
+
+	let client;
+
+	try {
+		client = await pool.connect();
+
+		await client.query("BEGIN");
+
+		const tenderResult = await client.query(
+			"SELECT tender_id FROM bid WHERE bid_id = $1;",
+			[bidId]
+		);
+
+		if (tenderResult.rowCount === 0) {
+			await client.query("ROLLBACK");
+			return res.status(404).send({ code: "BID_NOT_FOUND" });
+		}
+
+		const tenderId = parseInt(tenderResult.rows[0].tender_id);
+
+		if (status === "Awarded") {
+			const rejectStatus = "Rejected";
+			const awardBidResult = await client.query(
+				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
+				[status, tenderId, bidId]
+			);
+
+			const rejectOtherBidsResult = await client.query(
+				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id != $3;",
+				[rejectStatus, tenderId, bidId]
+			);
+
+			if (awardBidResult.rowCount > 0 || rejectOtherBidsResult.rowCount > 0) {
+				await client.query("COMMIT");
+				return res.status(200).send({ code: "SUCCESS" });
+			} else {
+				await client.query("ROLLBACK");
+				return res.status(500).send({ code: "SERVER_ERROR" });
+			}
+		} else {
+			const updateBidResult = await client.query(
+				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
+				[status, tenderId, bidId]
+			);
+
+			if (updateBidResult.rowCount > 0) {
+				await client.query("COMMIT");
+				return res.status(200).send({ code: "SUCCESS" });
+			} else {
+				await client.query("ROLLBACK");
+				return res.status(500).send({ code: "SERVER_ERROR" });
+			}
+		}
+	} catch (error) {
+		if (client) {
+			await client.query("ROLLBACK");
+		}
+		return res.status(500).send({ code: "SERVER_ERROR", error: error.message });
+	} finally {
+		if (client) {
+			client.release();
+		}
 	}
 });
 
