@@ -6,6 +6,41 @@ import { v4 as uuidv4 } from "uuid";
 const itemsPerPage = 25;
 const router = Router();
 
+const auth = async (req, res, next) => {
+	try {
+		const authHeader = req.headers.authorization;
+		const token = authHeader?.split(" ")[1];
+
+		if (!token) {
+			return res.status(401).json({ code: "AUTHRIZATION_REQUIRED" });
+		}
+
+		const sessionResult = await db.query(
+			"SELECT * FROM session WHERE token = $1",
+			[token]
+		);
+		const session = sessionResult.rows[0];
+
+		if (!session) {
+			return res.status(401).json({ code: "INVALID_SESSION" });
+		}
+
+		const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
+			session.user_id,
+		]);
+		const user = userResult.rows[0];
+
+		if (!user) {
+			return res.status(401).json({ code: "USER_NOT_FOUND" });
+		}
+
+		req.user = user;
+		next();
+	} catch (error) {
+		res.status(500).json({ code: "SERVER_ERROR", message: error.message });
+	}
+};
+
 router.get("/", (_, res) => {
 	res.status(200).json({ message: "WELCOME TO LOVE ME TENDER SITE" });
 });
@@ -25,7 +60,7 @@ router.get("/skills", (req, res) => {
 	res.status(200).json({ skills });
 });
 
-router.post("/publish-tenders", (req, res) => {
+router.post("/publish-tenders", auth, (req, res) => {
 	const formData = req.body;
 
 	const newErrors = [];
@@ -74,8 +109,8 @@ router.post("/publish-tenders", (req, res) => {
 	res.status(200).json({ message: "Form submitted successfully!" });
 });
 
-router.get("/buyer-tender", async (req, res) => {
-	const buyerId = 1;
+router.get("/buyer-tender", auth, async (req, res) => {
+	const buyerId = req.user.id;
 	let page = parseInt(req.query.page) || 1;
 	const offset = (page - 1) * itemsPerPage;
 
@@ -102,8 +137,8 @@ router.get("/buyer-tender", async (req, res) => {
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
-router.get("/bidder-bid", async (req, res) => {
-	const bidderId = 1;
+router.get("/bidder-bid", auth, async (req, res) => {
+	const bidderId = req.user.id;
 	const page = parseInt(req.query.page) || 1;
 	const offset = (page - 1) * itemsPerPage;
 
@@ -163,7 +198,7 @@ router.get("/tenders", async (req, res) => {
 	}
 });
 
-router.get("/bid", async (req, res) => {
+router.get("/bid", auth, async (req, res) => {
 	const tenderID = parseInt(req.query.tender_id);
 	let page = parseInt(req.query.page) || 1;
 	const itemsPerPage = 10;
@@ -192,7 +227,7 @@ router.get("/bid", async (req, res) => {
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
-router.post("/bid/:bidId/status", async (req, res) => {
+router.post("/bid/:bidId/status", auth, async (req, res) => {
 	const bidId = parseInt(req.params.bidId, 10);
 	const status = req.body.status;
 	const validStatuses = ["Awarded", "Rejected", "Withdraw", "In review"];
