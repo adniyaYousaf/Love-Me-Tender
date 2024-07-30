@@ -39,7 +39,7 @@ const BidderBiddingList = () => {
 	}
 
 	return (
-		<>
+		<main>
 			<h1>Bidder Bidding List</h1>
 			<div className="bids-container">
 				{" "}
