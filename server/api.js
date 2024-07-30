@@ -22,7 +22,12 @@ const auth = async (req, res, next) => {
 		const session = sessionResult.rows[0];
 
 		if (!session) {
-			return res.status(401).json({ code: "INVALID_SESSION" });
+			return res.status(401).json({ code: "UNAUTHRIZED" });
+		}
+
+		const currentTime = new Date();
+		if (session.expires_at <= currentTime) {
+			return res.status(401).json({ code: "EXPIRED_SESSION" });
 		}
 
 		const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
@@ -31,13 +36,13 @@ const auth = async (req, res, next) => {
 		const user = userResult.rows[0];
 
 		if (!user) {
-			return res.status(401).json({ code: "USER_NOT_FOUND" });
+			return res.status(500).json({ code: "SERVER_ERROR" });
 		}
 
 		req.user = user;
 		next();
 	} catch (error) {
-		res.status(500).json({ code: "SERVER_ERROR", message: error.message });
+		res.status(500).json({ code: "SERVER_ERROR" });
 	}
 };
 
