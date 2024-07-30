@@ -131,88 +131,90 @@ const PublishTenderForm = () => {
 	};
 
 	return (
-		<div className="container">
-			<h1>Publish Tender</h1>
-			{errors.length > 0 && (
-				<div className="error-message">
-					<ul>
-						{errors.map((error, index) => (
-							<li key={index}>{error}</li>
-						))}
-					</ul>
-				</div>
-			)}
-			<form onSubmit={handleSubmit}>
-				<div className="form-group">
-					<label htmlFor="title">Tender Title:</label>
-					<input
-						type="text"
-						id="title"
-						value={title}
-						onChange={handleTitleChange}
-						maxLength="50"
-						required
-					/>
-				</div>
-				<div className="form-group">
-					<label htmlFor="description">Tender Description:</label>
-					<textarea
-						id="description"
-						value={description}
-						onChange={handleDescriptionChange}
-						maxLength="7500"
-						required
-					></textarea>
-				</div>
-				<div className="form-group">
-					<label htmlFor="announcementDate">Tender Announcement Date:</label>
-					<input
-						type="date"
-						id="announcementDate"
-						value={announcementDate}
-						onChange={handleAnnouncementDateChange}
-						required
-					/>
-				</div>
-				<div className="form-group">
-					<label htmlFor="closingDate">Tender Closing Date:</label>
-					<input
-						type="date"
-						id="closingDate"
-						value={closingDate}
-						onChange={handleClosingDateChange}
-						required
-					/>
-				</div>
-				<div className="form-group">
-					<label htmlFor="deadlineDate">Tender Project Deadline Date:</label>
-					<input
-						type="date"
-						id="deadlineDate"
-						value={deadlineDate}
-						onChange={handleDeadlineDateChange}
-						required
-					/>
-				</div>
-				<div className="form-group">
-					<label htmlFor="skills">Skills Required:</label>
-					<select
-						id="skills"
-						multiple
-						value={selectedSkills}
-						onChange={handleSkillsChange}
-						required
-					>
-						{skills.map((skill) => (
-							<option key={skill} value={skill}>
-								{skill}
-							</option>
-						))}
-					</select>
-				</div>
-				<button type="submit">Publish Tender</button>
-			</form>
-		</div>
+		<main>
+			<div className="container">
+				<h1>Publish Tender</h1>
+				{errors.length > 0 && (
+					<div className="error-message">
+						<ul>
+							{errors.map((error, index) => (
+								<li key={index}>{error}</li>
+							))}
+						</ul>
+					</div>
+				)}
+				<form onSubmit={handleSubmit}>
+					<div className="form-group">
+						<label htmlFor="title">Tender Title:</label>
+						<input
+							type="text"
+							id="title"
+							value={title}
+							onChange={handleTitleChange}
+							maxLength="50"
+							required
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="description">Tender Description:</label>
+						<textarea
+							id="description"
+							value={description}
+							onChange={handleDescriptionChange}
+							maxLength="7500"
+							required
+						></textarea>
+					</div>
+					<div className="form-group">
+						<label htmlFor="announcementDate">Tender Announcement Date:</label>
+						<input
+							type="date"
+							id="announcementDate"
+							value={announcementDate}
+							onChange={handleAnnouncementDateChange}
+							required
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="closingDate">Tender Closing Date:</label>
+						<input
+							type="date"
+							id="closingDate"
+							value={closingDate}
+							onChange={handleClosingDateChange}
+							required
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="deadlineDate">Tender Project Deadline Date:</label>
+						<input
+							type="date"
+							id="deadlineDate"
+							value={deadlineDate}
+							onChange={handleDeadlineDateChange}
+							required
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="skills">Skills Required:</label>
+						<select
+							id="skills"
+							multiple
+							value={selectedSkills}
+							onChange={handleSkillsChange}
+							required
+						>
+							{skills.map((skill) => (
+								<option key={skill} value={skill}>
+									{skill}
+								</option>
+							))}
+						</select>
+					</div>
+					<button type="submit">Publish Tender</button>
+				</form>
+			</div>
+		</main>
 	);
 };
 

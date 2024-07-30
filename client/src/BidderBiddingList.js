@@ -35,7 +35,7 @@ const BidderBiddingList = () => {
 	}
 
 	return (
-		<>
+		<main>
 			<h1>Buyer Tenders List</h1>
 			<div className="bids-container">
 				{" "}
@@ -52,7 +52,7 @@ const BidderBiddingList = () => {
 					</div>
 				))}
 			</div>
-		</>
+		</main>
 	);
 };
 
