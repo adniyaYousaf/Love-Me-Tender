@@ -30,11 +30,6 @@ const auth = async (req, res, next) => {
 			return res.status(401).json({ code: "EXPIRED_SESSION" });
 		}
 
-		const currentTime = new Date();
-		if (session.expires_at <= currentTime) {
-			return res.status(401).json({ code: "EXPIRED_SESSION" });
-		}
-
 		const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
 			session.user_id,
 		]);
