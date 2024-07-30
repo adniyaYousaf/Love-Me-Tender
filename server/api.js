@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
 		const token = authHeader?.split(" ")[1];
 
 		if (!token) {
-			return res.status(401).json({ code: "AUTHRIZATION_REQUIRED" });
+			return res.status(401).json({ code: "UNAUTHRIZED" });
 		}
 
 		const sessionResult = await db.query(
@@ -23,6 +23,11 @@ const auth = async (req, res, next) => {
 
 		if (!session) {
 			return res.status(401).json({ code: "UNAUTHRIZED" });
+		}
+
+		const currentTime = new Date();
+		if (session.expires_at <= currentTime) {
+			return res.status(401).json({ code: "EXPIRED_SESSION" });
 		}
 
 		const currentTime = new Date();
