@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
 		const token = authHeader?.split(" ")[1];
 
 		if (!token) {
-			return res.status(401).json({ code: "AUTHRIZATION_REQUIRED" });
+			return res.status(401).json({ code: "UNAUTHRIZED" });
 		}
 
 		const sessionResult = await db.query(
@@ -25,19 +25,24 @@ const auth = async (req, res, next) => {
 			return res.status(401).json({ code: "INVALID_SESSION" });
 		}
 
+		const currentTime = new Date();
+		if (session.expires_at <= currentTime) {
+			return res.status(401).json({ code: "EXPIRED_SESSION" });
+		}
+
 		const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
 			session.user_id,
 		]);
 		const user = userResult.rows[0];
 
 		if (!user) {
-			return res.status(401).json({ code: "USER_NOT_FOUND" });
+			return res.status(500).json({ code: "SERVER_ERROR" });
 		}
 
 		req.user = user;
 		next();
 	} catch (error) {
-		res.status(500).json({ code: "SERVER_ERROR", message: error.message });
+		res.status(500).json({ code: "SERVER_ERROR" });
 	}
 };
 
