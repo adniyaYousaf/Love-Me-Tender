@@ -30,10 +30,10 @@ function LogInForm() {
 			});
 			const data = await response.json();
 			if (response.ok) {
-				const { token, user_type } = data.resources;
+				const { token, user_type } = data.resource;
 
 				localStorage.setItem("authToken", token);
-				localStorage.setItem("user_type", user_type);
+				localStorage.setItem("userType", user_type);
 
 				switch (user_type) {
 					case "admin":
