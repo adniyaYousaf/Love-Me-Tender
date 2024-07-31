@@ -30,9 +30,21 @@ function LogInForm() {
 			});
 			const data = await response.json();
 			if (response.ok) {
-				const token = data.resources.token;
+				const { token, user_type } = data.resources;
+
 				localStorage.setItem("authToken", token);
-				navigate("/admin-dashboard");
+				localStorage.setItem("user_type", user_type);
+
+				switch (user_type) {
+					case "admin":
+						navigate("/admin-dashboard");
+						break;
+					case "buyer":
+						navigate("/buyer-dashboard");
+						break;
+					default:
+						navigate("/bidder-dashboard");
+				}
 			} else {
 				switch (response.status) {
 					case 401:
