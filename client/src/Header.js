@@ -33,6 +33,14 @@ const Header = () => {
 						>
 							Grant Access
 						</NavLink>
+						<NavLink
+							exact
+							to="/logout"
+							className="nav-link"
+							activeClassName="active"
+						>
+							Logout
+						</NavLink>
 					</>
 				)}
 
@@ -62,6 +70,14 @@ const Header = () => {
 						>
 							Publish Tenders
 						</NavLink>
+						<NavLink
+							exact
+							to="/logout"
+							className="nav-link"
+							activeClassName="active"
+						>
+							Logout
+						</NavLink>
 					</>
 				)}
 
@@ -82,6 +98,14 @@ const Header = () => {
 							activeClassName="active"
 						>
 							My bids
+						</NavLink>
+						<NavLink
+							exact
+							to="/logout"
+							className="nav-link"
+							activeClassName="active"
+						>
+							Logout
 						</NavLink>
 					</>
 				)}
