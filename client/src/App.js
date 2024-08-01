@@ -10,32 +10,24 @@ import TendersList from "./TenderList";
 import Header from "./Header";
 import Footer from "./Footer";
 import LogInForm from "./pages/LogInForm";
-import { useState } from "react";
 
 const App = () => {
-	const [role, setRole] = useState(null);
-
-	return (
-		<>
-			<Header className="header" role={role} />
-			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/publish-tender" element={<PublishTenderForm />} />
-				<Route path="/BuyerTenderList" element={<BuyerTenderList />} />
-				<Route path="/BidderBiddingList" element={<BidderBiddingList />} />
-				<Route path="/signup" element={<SignUp />} />
-				<Route path="/admin-dashboard" element={<AdminDashboard />} />
-				<Route path="/buyer-dashboard" element={<BuyerDashboard />} />
-				<Route path="/list-tenders" element={<TendersList />} />
-				<Route
-					path="/list-tenders/page/:pageNumber"
-					element={<TendersList />}
-				/>
-				<Route path="/login" element={<LogInForm setRole={setRole} />} />
-			</Routes>
-			<Footer className="footer" />
-		</>
-	);
+	<>
+		<Header className="header" />
+		<Routes>
+			<Route path="/" element={<Home />} />
+			<Route path="/publish-tender" element={<PublishTenderForm />} />
+			<Route path="/BuyerTenderList" element={<BuyerTenderList />} />
+			<Route path="/BidderBiddingList" element={<BidderBiddingList />} />
+			<Route path="/signup" element={<SignUp />} />
+			<Route path="/admin-dashboard" element={<AdminDashboard />} />
+			<Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+			<Route path="/list-tenders" element={<TendersList />} />
+			<Route path="/list-tenders/page/:pageNumber" element={<TendersList />} />
+			<Route path="/login" element={<LogInForm />} />
+		</Routes>
+		<Footer className="footer" />
+	</>;
 };
 
 export default App;

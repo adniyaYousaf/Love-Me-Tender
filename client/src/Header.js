@@ -1,28 +1,20 @@
 import Logo from "./assets/images/CTY-logo-rectangle.png";
 import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./Header.css";
 
-const Header = ({ role }) => {
+const Header = () => {
+	const [role, setRole] = useState(null);
+
+	useEffect(() => {
+		const userType = localStorage.getItem("userType");
+		setRole(userType);
+	}, []);
+
 	return (
 		<header className="header">
 			<img className="logo" src={Logo} alt="Code Your Future logo" />
 			<nav className="nav-list">
-				<li>
-					<NavLink exact to="/" className="nav-link" activeClassName="active">
-						Home{" "}
-					</NavLink>
-				</li>
-				<li>
-					<NavLink
-						exact
-						to="/list-tenders"
-						className="nav-link"
-						activeClassName="active"
-					>
-						All Tenders{" "}
-					</NavLink>
-				</li>
-
 				{role === "admin" && (
 					<>
 						<NavLink
@@ -31,7 +23,7 @@ const Header = ({ role }) => {
 							className="nav-link"
 							activeClassName="active"
 						>
-							All Tenders{" "}
+							All Tenders
 						</NavLink>
 						<>
 							<NavLink
@@ -40,7 +32,7 @@ const Header = ({ role }) => {
 								className="nav-link"
 								activeClassName="active"
 							>
-								Grant Access{" "}
+								Grant Access
 							</NavLink>
 						</>
 					</>
@@ -54,7 +46,7 @@ const Header = ({ role }) => {
 							className="nav-link"
 							activeClassName="active"
 						>
-							All Tenders{" "}
+							All Tenders
 						</NavLink>
 						<>
 							<NavLink
@@ -63,7 +55,7 @@ const Header = ({ role }) => {
 								className="nav-link"
 								activeClassName="active"
 							>
-								My Tenders{" "}
+								My Tenders
 							</NavLink>
 							<NavLink
 								exact
@@ -71,7 +63,7 @@ const Header = ({ role }) => {
 								className="nav-link"
 								activeClassName="active"
 							>
-								Publish Tenders{" "}
+								Publish Tenders
 							</NavLink>
 						</>
 					</>
@@ -85,7 +77,7 @@ const Header = ({ role }) => {
 							className="nav-link"
 							activeClassName="active"
 						>
-							All Tenders{" "}
+							All Tenders
 						</NavLink>
 						<>
 							<NavLink
@@ -94,7 +86,7 @@ const Header = ({ role }) => {
 								className="nav-link"
 								activeClassName="active"
 							>
-								My bids{" "}
+								My bids
 							</NavLink>
 						</>
 					</>
