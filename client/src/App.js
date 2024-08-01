@@ -6,12 +6,13 @@ import BidderBiddingList from "./BidderBiddingList";
 import SignUp from "./pages/SignUp";
 import AdminDashboard from "./pages/AdminDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
+import BidderDashboard from "./BidderDashboard";
 import TendersList from "./TenderList";
 import Header from "./Header";
 import Footer from "./Footer";
 import LogInForm from "./pages/LogInForm";
 
-const App = () => {
+const App = () => (
 	<>
 		<Header className="header" />
 		<Routes>
@@ -22,12 +23,13 @@ const App = () => {
 			<Route path="/signup" element={<SignUp />} />
 			<Route path="/admin-dashboard" element={<AdminDashboard />} />
 			<Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+			<Route path="/bidder-dashboard" element={<BidderDashboard />} />
 			<Route path="/list-tenders" element={<TendersList />} />
 			<Route path="/list-tenders/page/:pageNumber" element={<TendersList />} />
 			<Route path="/login" element={<LogInForm />} />
 		</Routes>
 		<Footer className="footer" />
-	</>;
-};
+	</>
+);
 
 export default App;
