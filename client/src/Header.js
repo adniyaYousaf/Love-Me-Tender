@@ -2,6 +2,8 @@ import Logo from "./assets/images/CTY-logo-rectangle.png";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { post } from "./TenderClient";
+
 import "./Header.css";
 
 const Header = () => {
@@ -15,15 +17,7 @@ const Header = () => {
 
 	const handleLogout = async () => {
 		try {
-			const token = localStorage.getItem("token");
-
-			const response = await fetch("/logout", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
+			const response = await post("/logout");
 
 			if (response.ok) {
 				localStorage.removeItem("token");
@@ -33,7 +27,7 @@ const Header = () => {
 				console.error("Logout failed");
 			}
 		} catch (error) {
-			console.error("Error during logout:", error);
+			console.error("Error during logout:");
 		}
 	};
 

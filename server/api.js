@@ -417,4 +417,20 @@ router.post("/sign-in", async (req, res) => {
 	}
 });
 
+router.post("/logout", async (req, res) => {
+	try {
+		const authHeader = req.headers.authorization;
+		const token = authHeader?.split(" ")[1];
+
+		if (!token) {
+			return res.status(401).json({ code: "UNAUTHORIZED" });
+		}
+		await db.query("DELETE FROM session WHERE token = $1", [token]);
+
+		res.status(200).json({ code: "LOGOUT_SUCCESS" });
+	} catch (error) {
+		res.status(500).json({ code: "SERVER_ERROR" });
+	}
+});
+
 export default router;
