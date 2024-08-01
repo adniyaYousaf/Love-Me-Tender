@@ -25,16 +25,14 @@ const Header = () => {
 						>
 							All Tenders
 						</NavLink>
-						<>
-							<NavLink
-								exact
-								to="/signup"
-								className="nav-link"
-								activeClassName="active"
-							>
-								Grant Access
-							</NavLink>
-						</>
+						<NavLink
+							exact
+							to="/signup"
+							className="nav-link"
+							activeClassName="active"
+						>
+							Grant Access
+						</NavLink>
 					</>
 				)}
 
@@ -48,24 +46,22 @@ const Header = () => {
 						>
 							All Tenders
 						</NavLink>
-						<>
-							<NavLink
-								exact
-								to="/BuyerTenderList"
-								className="nav-link"
-								activeClassName="active"
-							>
-								My Tenders
-							</NavLink>
-							<NavLink
-								exact
-								to="/publish-tender"
-								className="nav-link"
-								activeClassName="active"
-							>
-								Publish Tenders
-							</NavLink>
-						</>
+						<NavLink
+							exact
+							to="/BuyerTenderList"
+							className="nav-link"
+							activeClassName="active"
+						>
+							My Tenders
+						</NavLink>
+						<NavLink
+							exact
+							to="/publish-tender"
+							className="nav-link"
+							activeClassName="active"
+						>
+							Publish Tenders
+						</NavLink>
 					</>
 				)}
 
@@ -79,16 +75,14 @@ const Header = () => {
 						>
 							All Tenders
 						</NavLink>
-						<>
-							<NavLink
-								exact
-								to="/BidderBiddingList"
-								className="nav-link"
-								activeClassName="active"
-							>
-								My bids
-							</NavLink>
-						</>
+						<NavLink
+							exact
+							to="/BidderBiddingList"
+							className="nav-link"
+							activeClassName="active"
+						>
+							My bids
+						</NavLink>
 					</>
 				)}
 			</nav>
