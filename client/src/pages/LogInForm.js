@@ -4,7 +4,7 @@ import Logo from "../assets/images/CTY-logo-rectangle.png";
 import { post } from "../TenderClient";
 import "./LogInForm.css";
 
-function LogInForm() {
+function LogInForm({ setRole }) {
 	const [emailInput, setEmailInput] = useState("");
 	const [passwordInput, setPasswordInput] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
@@ -27,6 +27,7 @@ function LogInForm() {
 
 			localStorage.setItem("authToken", token);
 			localStorage.setItem("userType", user_type);
+			setRole(user_type);
 
 			switch (user_type) {
 				case "admin":
