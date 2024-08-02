@@ -10,7 +10,8 @@ const allowlist = {
 	POST: {
 		"/sign-in": "public",
 		"/tender": "buyer",
-		"/logout": "token",
+		"/bid": "token",
+    "/logout": "token",
 	},
 	GET: {
 		"/skills": "token",
@@ -24,8 +25,10 @@ const auth = async (req, res, next) => {
 	try {
 		const method = req.method.toUpperCase();
 		const path = req.path;
+		const firstPathSegment = path.split("/")[1];
 
-		const allowedAccess = allowlist[method] && allowlist[method][path];
+		const allowedAccess =
+			allowlist[method] && allowlist[method][[`/${firstPathSegment}`]];
 
 		if (allowedAccess === "public") {
 			return next();
@@ -82,6 +85,116 @@ router.use(auth);
 
 router.get("/", (_, res) => {
 	res.status(200).json({ message: "WELCOME TO LOVE ME TENDER SITE" });
+});
+
+function generateRandomPassword(length = 12) {
+	const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+	const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const numbers = "0123456789";
+	const specialChars = "!@#$%^&*()_-+=";
+
+	const allChars = lowerCase + upperCase + numbers + specialChars;
+
+	let password = "";
+	password += lowerCase.charAt(Math.floor(Math.random() * lowerCase.length));
+	password += upperCase.charAt(Math.floor(Math.random() * upperCase.length));
+	password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+	password += specialChars.charAt(
+		Math.floor(Math.random() * specialChars.length)
+	);
+
+	for (let i = 4; i < length; i++) {
+		password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+	}
+
+	return password;
+}
+
+function validateEmail(email) {
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	return emailRegex.test(email);
+}
+
+router.post("/signup", async (req, res) => {
+	const {
+		email,
+		userType,
+		firstName,
+		lastName,
+		company,
+		address,
+		description,
+	} = req.body;
+
+	const errors = [];
+
+	if (!validateEmail(email)) {
+		errors.push("Invalid email format");
+	}
+
+	if (!["bidder", "buyer"].includes(userType)) {
+		errors.push("Invalid user type. Allowed values are 'bidder' and 'buyer'");
+	}
+
+	if (!firstName) {
+		errors.push("First name is required");
+	}
+
+	if (!lastName) {
+		errors.push("Last name is required");
+	}
+
+	if (userType === "buyer" && (!company || !description || !address)) {
+		errors.push("Company, description, and address are required for buyers");
+	}
+
+	if (errors.length > 0) {
+		return res.status(400).json({
+			code: "VALIDATION_ERROR",
+			errors: errors,
+		});
+	}
+
+	const client = await pool.connect();
+
+	try {
+		await client.query("BEGIN");
+
+		const password = generateRandomPassword();
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		const userQuery =
+			"INSERT INTO users (email, password_hash, user_type) VALUES ($1, $2, $3) RETURNING id";
+		const userValues = [email, hashedPassword, userType];
+
+		const userResult = await client.query(userQuery, userValues);
+		const userId = userResult.rows[0].id;
+
+		let userTableQuery;
+		let userTableValues;
+
+		if (userType === "bidder") {
+			userTableQuery =
+				"INSERT INTO bidder (user_id, first_name, last_name, last_update) VALUES ($1, $2, $3, NOW())";
+			userTableValues = [userId, firstName, lastName];
+		} else if (userType === "buyer") {
+			userTableQuery =
+				"INSERT INTO buyer (user_id, company, description, address, last_update) VALUES ($1, $2, $3, $4, NOW())";
+			userTableValues = [userId, company, description, address];
+		} else {
+			await client.query("ROLLBACK");
+			return res.status(500).json({ code: "SERVER_ERROR" });
+		}
+
+		await client.query(userTableQuery, userTableValues);
+		await client.query("COMMIT");
+		res.status(201).json({});
+	} catch (error) {
+		await client.query("ROLLBACK");
+		res.status(500).json({ code: "SERVER_ERROR" });
+	} finally {
+		client.release();
+	}
 });
 
 router.get("/skills", async (req, res) => {
@@ -305,6 +418,7 @@ router.post("/bid/:bidId/status", async (req, res) => {
 	const bidId = parseInt(req.params.bidId, 10);
 	const status = req.body.status;
 	const validStatuses = ["Awarded", "Rejected", "Withdraw", "In review"];
+	const user = req.user;
 
 	if (!validStatuses.includes(status)) {
 		return res.status(400).send({ code: "INVALID_STATUS" });
@@ -317,23 +431,51 @@ router.post("/bid/:bidId/status", async (req, res) => {
 
 		await client.query("BEGIN");
 
-		const tenderResult = await client.query(
-			"SELECT tender_id FROM bid WHERE bid_id = $1;",
+		const bidResult = await client.query(
+			"SELECT tender_id, bidder_id FROM bid WHERE bid_id = $1;",
 			[bidId]
 		);
 
-		if (tenderResult.rowCount === 0) {
+		if (bidResult.rowCount === 0) {
 			await client.query("ROLLBACK");
 			return res.status(404).send({ code: "BID_NOT_FOUND" });
 		}
 
-		const tenderId = parseInt(tenderResult.rows[0].tender_id);
+		const bid = bidResult.rows[0];
+		const tenderId = bid.tender_id;
+		const bidderId = bid.bidder_id;
+
+		const tenderResult = await client.query(
+			"SELECT buyer_id FROM tender WHERE id = $1;",
+			[tenderId]
+		);
+
+		if (tenderResult.rowCount === 0) {
+			await client.query("ROLLBACK");
+			return res.status(500).send({ code: "SERVER_ERROR" });
+		}
+
+		const buyerId = tenderResult.rows[0].buyer_id;
+
+		if (
+			(status === "Awarded" || status === "Rejected") &&
+			user.id !== buyerId
+		) {
+			await client.query("ROLLBACK");
+			return res.status(403).send({ code: "FORBIDDEN" });
+		}
+
+		if (status === "Withdraw" && user.id !== bidderId) {
+			await client.query("ROLLBACK");
+			return res.status(403).send({ code: "FORBIDDEN" });
+		}
 
 		if (status === "Awarded") {
 			const rejectStatus = "Rejected";
+
 			const awardBidResult = await client.query(
-				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
-				[status, tenderId, bidId]
+				"UPDATE bid SET status = $1 WHERE bid_id = $2;",
+				[status, bidId]
 			);
 
 			const rejectOtherBidsResult = await client.query(
@@ -341,7 +483,7 @@ router.post("/bid/:bidId/status", async (req, res) => {
 				[rejectStatus, tenderId, bidId]
 			);
 
-			if (awardBidResult.rowCount > 0 || rejectOtherBidsResult.rowCount > 0) {
+			if (awardBidResult.rowCount > 0 || rejectOtherBidsResult.rowCount >= 0) {
 				await client.query("COMMIT");
 				return res.status(200).send({ code: "SUCCESS" });
 			} else {
@@ -350,8 +492,8 @@ router.post("/bid/:bidId/status", async (req, res) => {
 			}
 		} else {
 			const updateBidResult = await client.query(
-				"UPDATE bid SET status = $1 WHERE tender_id = $2 AND bid_id = $3;",
-				[status, tenderId, bidId]
+				"UPDATE bid SET status = $1 WHERE bid_id = $2;",
+				[status, bidId]
 			);
 
 			if (updateBidResult.rowCount > 0) {
@@ -366,7 +508,7 @@ router.post("/bid/:bidId/status", async (req, res) => {
 		if (client) {
 			await client.query("ROLLBACK");
 		}
-		return res.status(500).send({ code: "SERVER_ERROR", error: error.message });
+		return res.status(500).send({ code: "SERVER_ERROR" });
 	} finally {
 		if (client) {
 			client.release();
