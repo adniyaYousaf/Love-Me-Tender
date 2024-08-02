@@ -18,9 +18,9 @@ const Header = () => {
 
 		window.addEventListener("storage", storageEventHandler);
 
-		// return () => {
-		// 	window.removeEventListener("storage", storageEventHandler);
-		// };
+		return () => {
+			window.removeEventListener("storage", storageEventHandler);
+		};
 	}, []);
 
 	const handleLogout = async (e) => {
