@@ -26,7 +26,7 @@ const App = () => (
 			<Route path="/bidder-dashboard" element={<BidderDashboard />} />
 			<Route path="/list-tenders" element={<TendersList />} />
 			<Route path="/list-tenders/page/:pageNumber" element={<TendersList />} />
-			<Route path="/sign-in" element={<LogInForm />} />
+			<Route path="/login" element={<LogInForm />} />
 		</Routes>
 		<Footer className="footer" />
 	</>
