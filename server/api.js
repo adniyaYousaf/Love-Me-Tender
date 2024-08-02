@@ -10,6 +10,7 @@ const allowlist = {
 	POST: {
 		"/sign-in": "public",
 		"/tender": "buyer",
+		"/logout": "token",
 	},
 	GET: {
 		"/skills": "token",
@@ -419,13 +420,7 @@ router.post("/sign-in", async (req, res) => {
 
 router.post("/logout", async (req, res) => {
 	try {
-		const authHeader = req.headers.authorization;
-		const token = authHeader?.split(" ")[1];
-
-		if (!token) {
-			return res.status(401).json({ code: "UNAUTHORIZED" });
-		}
-		await db.query("DELETE FROM session WHERE token = $1", [token]);
+		await db.query("DELETE FROM session WHERE user_id = $1", [req.user.id]);
 
 		res.status(200).json({ code: "LOGOUT_SUCCESS" });
 	} catch (error) {
