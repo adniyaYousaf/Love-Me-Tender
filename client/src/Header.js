@@ -7,23 +7,32 @@ import { post } from "./TenderClient";
 import "./Header.css";
 
 const Header = () => {
-	const [role, setRole] = useState(null);
+	const [role, setRole] = useState(localStorage.getItem("userType") || null);
 	const [errMsg, setErrMsg] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const userType = localStorage.getItem("userType");
-		setRole(userType);
+		const storageEventHandler = () => {
+			setRole(localStorage.getItem("userType"));
+		};
+
+		window.addEventListener("storage", storageEventHandler);
+
+		return () => {
+			window.removeEventListener("storage", storageEventHandler);
+		};
 	}, []);
 
-	const handleLogout = async () => {
+	const handleLogout = async (e) => {
+		e.preventDefault();
 		try {
-			const response = await post("/logout");
+			const response = await post("/api/logout");
 
-			if (response.ok) {
+			if (response) {
 				localStorage.removeItem("token");
 				localStorage.removeItem("userType");
 				navigate("/");
+				setRole(null);
 			} else {
 				setErrMsg("Logout failed");
 			}
@@ -39,105 +48,107 @@ const Header = () => {
 	return (
 		<header className="header">
 			<img className="logo" src={Logo} alt="Code Your Future logo" />
-			<nav className="nav-list">
-				{role === "admin" && (
-					<>
-						<NavLink
-							exact
-							to="/list-tenders"
-							className="nav-link"
-							activeClassName="active"
-						>
-							All Tenders
-						</NavLink>
-						<NavLink
-							exact
-							to="/signup"
-							className="nav-link"
-							activeClassName="active"
-						>
-							Grant Access
-						</NavLink>
-						<NavLink
-							exact
-							to="/logout"
-							className="nav-link"
-							activeClassName="active"
-							onClick={handleLogout}
-						>
-							Logout
-						</NavLink>
-					</>
-				)}
+			{role != null && (
+				<nav className="nav-list">
+					{role === "admin" && (
+						<>
+							<NavLink
+								exact
+								to="/list-tenders"
+								className="nav-link"
+								activeClassName="active"
+							>
+								All Tenders
+							</NavLink>
+							<NavLink
+								exact
+								to="/signup"
+								className="nav-link"
+								activeClassName="active"
+							>
+								Grant Access
+							</NavLink>
+							<NavLink
+								exact
+								to="/"
+								className="nav-link"
+								activeClassName="active"
+								onClick={handleLogout}
+							>
+								Logout
+							</NavLink>
+						</>
+					)}
 
-				{role === "buyer" && (
-					<>
-						<NavLink
-							exact
-							to="/list-tenders"
-							className="nav-link"
-							activeClassName="active"
-						>
-							All Tenders
-						</NavLink>
-						<NavLink
-							exact
-							to="/BuyerTenderList"
-							className="nav-link"
-							activeClassName="active"
-						>
-							My Tenders
-						</NavLink>
-						<NavLink
-							exact
-							to="/publish-tender"
-							className="nav-link"
-							activeClassName="active"
-						>
-							Publish Tenders
-						</NavLink>
-						<NavLink
-							exact
-							to="/logout"
-							className="nav-link"
-							activeClassName="active"
-							onClick={handleLogout}
-						>
-							Logout
-						</NavLink>
-					</>
-				)}
+					{role === "buyer" && (
+						<>
+							<NavLink
+								exact
+								to="/list-tenders"
+								className="nav-link"
+								activeClassName="active"
+							>
+								All Tenders
+							</NavLink>
+							<NavLink
+								exact
+								to="/BuyerTenderList"
+								className="nav-link"
+								activeClassName="active"
+							>
+								My Tenders
+							</NavLink>
+							<NavLink
+								exact
+								to="/publish-tender"
+								className="nav-link"
+								activeClassName="active"
+							>
+								Publish Tenders
+							</NavLink>
+							<NavLink
+								exact
+								to="/"
+								className="nav-link"
+								activeClassName="active"
+								onClick={handleLogout}
+							>
+								Logout
+							</NavLink>
+						</>
+					)}
 
-				{role === "bidder" && (
-					<>
-						<NavLink
-							exact
-							to="/list-tenders"
-							className="nav-link"
-							activeClassName="active"
-						>
-							All Tenders
-						</NavLink>
-						<NavLink
-							exact
-							to="/BidderBiddingList"
-							className="nav-link"
-							activeClassName="active"
-						>
-							My bids
-						</NavLink>
-						<NavLink
-							exact
-							to="/logout"
-							className="nav-link"
-							activeClassName="active"
-							onClick={handleLogout}
-						>
-							Logout
-						</NavLink>
-					</>
-				)}
-			</nav>
+					{role === "bidder" && (
+						<>
+							<NavLink
+								exact
+								to="/list-tenders"
+								className="nav-link"
+								activeClassName="active"
+							>
+								All Tenders
+							</NavLink>
+							<NavLink
+								exact
+								to="/BidderBiddingList"
+								className="nav-link"
+								activeClassName="active"
+							>
+								My bids
+							</NavLink>
+							<NavLink
+								exact
+								to="/"
+								className="nav-link"
+								activeClassName="active"
+								onClick={handleLogout}
+							>
+								Logout
+							</NavLink>
+						</>
+					)}
+				</nav>
+			)}
 		</header>
 	);
 };
