@@ -11,7 +11,7 @@ const allowlist = {
 		"/sign-in": "public",
 		"/tender": "buyer",
 		"/bid": "token",
-    "/logout": "token",
+		"/logout": "token",
 	},
 	GET: {
 		"/skills": "token",

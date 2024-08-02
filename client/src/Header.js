@@ -27,7 +27,7 @@ const Header = () => {
 				console.error("Logout failed");
 			}
 		} catch (error) {
-			console.error("Error during logout:");
+			console.error("Failed to logout. Try again!");
 		}
 	};
 
