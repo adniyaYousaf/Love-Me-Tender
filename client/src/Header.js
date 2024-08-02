@@ -8,6 +8,7 @@ import "./Header.css";
 
 const Header = () => {
 	const [role, setRole] = useState(null);
+	const [errMsg, setErrMsg] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -24,12 +25,16 @@ const Header = () => {
 				localStorage.removeItem("userType");
 				navigate("/");
 			} else {
-				console.error("Logout failed");
+				setErrMsg("Logout failed");
 			}
 		} catch (error) {
-			console.error("Failed to logout. Try again!");
+			setErrMsg("Failed to logout. Try again!");
 		}
 	};
+
+	if (errMsg != null) {
+		<div>Error: {errMsg}</div>;
+	}
 
 	return (
 		<header className="header">
