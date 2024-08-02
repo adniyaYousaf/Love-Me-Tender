@@ -18,7 +18,7 @@ const Header = () => {
 
 	const handleLogout = async () => {
 		try {
-			const response = await post("/logout");
+			const response = await post("/api/logout");
 
 			if (response.ok) {
 				localStorage.removeItem("token");
@@ -60,7 +60,7 @@ const Header = () => {
 						</NavLink>
 						<NavLink
 							exact
-							to="/logout"
+							to="/"
 							className="nav-link"
 							activeClassName="active"
 							onClick={handleLogout}
@@ -98,7 +98,7 @@ const Header = () => {
 						</NavLink>
 						<NavLink
 							exact
-							to="/logout"
+							to="/"
 							className="nav-link"
 							activeClassName="active"
 							onClick={handleLogout}
@@ -128,7 +128,7 @@ const Header = () => {
 						</NavLink>
 						<NavLink
 							exact
-							to="/logout"
+							to="/"
 							className="nav-link"
 							activeClassName="active"
 							onClick={handleLogout}
