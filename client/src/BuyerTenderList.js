@@ -1,64 +1,99 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { get } from "./TenderClient";
 
 const BuyerTenderList = () => {
+	const { pageNumber } = useParams();
+	const currentPage = pageNumber ? parseInt(pageNumber, 10) : 1;
+	const [buyerTenders, setBuyerTender] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [buyerTenders, setBuyerTenders] = useState([]);
-	const [errorMsg, setErrorMsg] = useState(null);
+	const [pagination, setPagination] = useState({
+		itemsPerPage: 25,
+		currentPage: currentPage,
+		totalPages: 1,
+	});
 
-	function dateFormat(date) {
-		return date ? date.split("T")[0] : "N/A";
-	}
+	const [error, setError] = useState(null);
+	const navigate = useNavigate();
 
-	useEffect(() => {
-		const fetchBuyerTenders = async () => {
-			try {
-				const data = await get("api/buyer-tender?page=1");
-				setLoading(false);
-				setBuyerTenders(data.results);
-			} catch (error) {
-				setErrorMsg(error.message);
+	const fetchBuyerTenders = async (page) => {
+		setLoading(true);
+		try {
+			const data = await get(`/api/buyer-tender?page=${page}`);
+			if (data && data.results && data.pagination) {
+				setBuyerTender(data.results);
+				setPagination(data.pagination);
+				setError(null);
+			} else {
+				throw new Error("Server error");
 			}
-		};
-		fetchBuyerTenders();
-	}, []);
+		} catch (error) {
+			setError("Error fetching tenders: " + error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-	if (errorMsg !== null) {
-		return <div>{errorMsg}</div>;
-	}
+	console.log(buyerTenders);
+	useEffect(() => {
+		fetchBuyerTenders(currentPage);
+	}, [currentPage]);
 
-	if (loading) {
-		return <div>Loading!!</div>;
-	}
+	const loadNextPage = () => {
+		if (pagination.currentPage < pagination.totalPages && !loading) {
+			navigate(`/dashboard/page/${pagination.currentPage + 1}`);
+		}
+	};
 
-	if (buyerTenders.length === 0) {
-		return <div>No tender published yet!!</div>;
-	}
+	const loadPreviousPage = () => {
+		if (pagination.currentPage > 1 && !loading) {
+			navigate(`/dashboard/page/${pagination.currentPage - 1}`);
+		}
+	};
 
 	return (
 		<main>
-			<h1>Buyer Tenders List</h1>
-			<div className="tender-container">
-				{" "}
-				{buyerTenders.map((tender, index) => (
-					<div className="tender-card" key={index}>
-						<a href="/" className="tender-title">
-							{tender.title}
-						</a>
-						<p>Tender created on: {dateFormat(tender.creation_date)}</p>
-						<div>
-							<p>Announcement Date: {dateFormat(tender.announcement_date)}</p>
-							<p>Deadline: {dateFormat(tender.deadline)}</p>{" "}
-						</div>
-						<p className="tender-description">
-							{tender.description.substring(0, 200)}
-						</p>
-						<p>No of bids: {tender.no_of_bids_recevied}</p>
-						<p>Cost £{tender.cost}</p>
-						<span>Status {tender.status}</span>
-						<span>Last Update: {dateFormat(tender.last_update)}</span>
-					</div>
-				))}
+			<div className="tenders-container">
+				<h2>My Tenders</h2>
+				{error && <p className="error-message">{error}</p>}
+				<table className="tenders-table">
+					<thead>
+						<tr>
+							<th>Tender ID</th>
+							<th>Tender Title</th>
+							<th>Tender Created Date</th>
+							<th>Tender Announcement Date</th>
+							<th>Tender Project Deadline Date</th>
+							<th>Tender Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{buyerTenders.map((tender) => (
+							<tr key={tender.id}>
+								<td>{tender.id}</td>
+								<td>{tender.title}</td>
+								<td>{new Date(tender.creation_date).toLocaleDateString()}</td>
+								<td>
+									{new Date(tender.announcement_date).toLocaleDateString()}
+								</td>
+								<td>{new Date(tender.deadline).toLocaleDateString()}</td>
+								<td>{tender.status}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+				<div className="pagination-buttons">
+					{pagination.currentPage > 1 && (
+						<button onClick={loadPreviousPage} disabled={loading}>
+							Previous Page
+						</button>
+					)}
+					{pagination.currentPage < pagination.totalPages && (
+						<button onClick={loadNextPage} disabled={loading}>
+							Next Page
+						</button>
+					)}
+				</div>
 			</div>
 		</main>
 	);
