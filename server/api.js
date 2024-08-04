@@ -171,10 +171,7 @@ router.post("/signup", async (req, res) => {
 		const userResult = await client.query(userQuery, userValues);
 
 		if (!userResult.rows[0] || !userResult.rows[0].id) {
-			return res.status(400).json({
-				code: "VALIDATION_ERROR",
-				errors: errors,
-			});
+			throw new Error("Failed to insert user into the users table");
 		}
 		const userId = userResult.rows[0].id;
 
