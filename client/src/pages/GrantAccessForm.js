@@ -24,25 +24,27 @@ const GrantAccessForm = () => {
 
 	async function postBuyerDetails(buyerData) {
 		try {
-			const data = await post("/mock-api", buyerData);
-			if (data.success) {
+			const data = await post("/api/signup", buyerData);
+			if (data) {
 				setRegisterStatus("Successfully registered.");
+			} else {
+				setRegisterStatus("Registration failed!");
 			}
-			setRegisterStatus("Registration failed!");
 		} catch (error) {
-			setRegisterStatus("Internal server error");
+			setRegisterStatus("Validation Error");
 		}
 	}
 
 	async function postBidderDetails(bidderData) {
 		try {
-			const data = await post("/mock-api", bidderData);
-			if (data.success) {
+			const data = await post("/api/signup", bidderData);
+			if (data) {
 				setRegisterStatus("Successfully registered.");
+			} else {
+				setRegisterStatus("Registration failed!");
 			}
-			setRegisterStatus("Registration failed!");
 		} catch (error) {
-			setRegisterStatus("Internal server error");
+			setRegisterStatus("Validation Error");
 		}
 	}
 
@@ -73,19 +75,17 @@ const GrantAccessForm = () => {
 
 	return (
 		<main>
-			<form
-				className="container-role"
-				onChange={(e) => setRole(e.target.value)}
-			>
-				<input type="radio" name="role" value="bidder" />
-				<label className="form-control" htmlFor="bidder">
-					Bidder
-				</label>
-				<input type="radio" name="role" value="buyer" />
-				<label className="form-control" htmlFor="buyer">
-					Buyer
-				</label>
-			</form>
+			<div className="container-role" onChange={(e) => setRole(e.target.value)}>
+				<label htmlFor="role">Select a role</label>
+				<select className="form-input" name="role">
+					<option className="grant-access-option" value="buyer">
+						Buyer
+					</option>
+					<option className="grant-access-option" value="bidder">
+						Bidder
+					</option>
+				</select>
+			</div>
 
 			{role === "bidder" && (
 				<div className="form-container">
@@ -107,13 +107,13 @@ const GrantAccessForm = () => {
 							/>
 						</div>
 						<div className="form-label">
-							<label htmlFor="last-name">Last Name</label>
+							<label htmlFor="first-name">Last Name</label>
 							<input
 								className="form-input"
 								type="text"
-								name="last-name"
-								placeholder="Enter your last name"
-								value={bidderDetails.lastName}
+								name="first-name"
+								placeholder="Enter your email address"
+								value={bidderDetails.firstName}
 								onChange={handleBidderChange}
 								required
 							/>
@@ -130,19 +130,20 @@ const GrantAccessForm = () => {
 								required
 							/>
 						</div>
-						<button className="form-btn" type="submit">
+						<button className="form-btn grant-access-btn" type="submit">
 							Submit
 						</button>
 					</form>
 				</div>
 			)}
+
 			{role === "buyer" && (
-				<div className="form-container">
+				<div className="form-container buyer-container">
 					<div className="form-logo">
 						<img src={Logo} alt="logo" />
 					</div>
 					<h1 className="form-heading">Register Buyer</h1>
-					<form className="form" onSubmit={handleBuyerSubmit}>
+					<form className="form buyer-form" onSubmit={handleBuyerSubmit}>
 						<div className="form-label">
 							<label htmlFor="company">Company</label>
 							<input
@@ -152,6 +153,19 @@ const GrantAccessForm = () => {
 								name="company"
 								placeholder="Enter your company name"
 								value={buyerDetails.company}
+								onChange={handleBuyerChange}
+							/>
+						</div>
+
+						<div className="form-label description">
+							<label htmlFor="description">Description</label>
+							<textarea
+								className="form-input textarea"
+								type="text"
+								id="description"
+								name="description"
+								placeholder="Enter your company name"
+								value={buyerDetails.description}
 								onChange={handleBuyerChange}
 							/>
 						</div>
@@ -181,7 +195,7 @@ const GrantAccessForm = () => {
 								onChange={handleBuyerChange}
 							/>
 						</div>
-						<button className="form-btn" type="submit">
+						<button className="form-btn grant-access-btn" type="submit">
 							Submit
 						</button>
 					</form>

@@ -5,55 +5,31 @@
 	margin-bottom: 2rem;
 }
 
-.form-control {
-	font-family: system-ui, sans-serif;
-	font-size: 1.5rem;
-	font-weight: bold;
-	line-height: 1.1;
-	display: flex;
+.container-role select {
+	width: 7rem;
 }
 
-.form-control + .form-control {
-	margin-top: 1rem;
+.buyer-container {
+	height: 650px;
 }
 
-.form-control:focus-within {
-	color: var(--orange);
-}
-
-input[type="radio"] {
-	cursor: pointer;
-	-webkit-appearance: none;
-	appearance: none;
-	background-color: var(--white);
-	margin: 0;
-	font: inherit;
-	color: currentColor;
-	width: 1.15rem;
-	height: 1.15rem;
-	border: 0.15rem solid currentColor;
-	border-radius: 50%;
-	transform: translateY(-0.075em);
+.buyer-form {
+	height: 420px;
 	display: grid;
-	place-content: center;
+	gap: 2rem;
 }
 
-input[type="radio"]::before {
-	content: "";
-	width: 0.65em;
-	height: 0.65em;
-	border-radius: 50%;
-	transform: scale(0);
-	transition: 120ms transform ease-in-out;
-	box-shadow: inset 1rem 1rem var(--orange);
-	background-color: CanvasText;
+.grant-access-option {
+	color: red;
 }
 
-input[type="radio"]:checked::before {
-	transform: scale(1);
+.textarea {
+	height: 5rem;
+	resize: none;
 }
-
-input[type="radio"]:focus {
-	outline: max(2px, 0.15em) solid currentColor;
-	outline-offset: max(2px, 0.15em);
+.description {
+	height: 7rem;
+}
+.grant-access-btn {
+	margin-top: 0.5rem;
 }
