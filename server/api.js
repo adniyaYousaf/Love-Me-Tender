@@ -142,11 +142,11 @@ router.post("/signup", async (req, res) => {
 	}
 
 	if (userType === "bidder" && (!firstName || !lastName)) {
-		errors.push("Company, description, and address are required for buyers");
+		errors.push("first name and last name are required for buyers");
 	}
 
 	if (userType === "buyer" && (!company || !address)) {
-		errors.push("Company, description, and address are required for buyers");
+		errors.push("Company and address are required for buyers");
 	}
 
 	if (errors.length > 0) {

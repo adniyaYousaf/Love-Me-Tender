@@ -22,29 +22,16 @@ const GrantAccessForm = () => {
 
 	const [resgisterStatus, setRegisterStatus] = useState("");
 
-	async function postBuyerDetails(buyerData) {
+	async function postDetails(endpoint, data) {
 		try {
-			const data = await post("/api/signup", buyerData);
-			if (data) {
+			const res = await post(`${endpoint}`, data);
+			if (res) {
 				setRegisterStatus("Successfully registered.");
 			} else {
 				setRegisterStatus("Registration failed!");
 			}
 		} catch (error) {
-			setRegisterStatus("Validation Error");
-		}
-	}
-
-	async function postBidderDetails(bidderData) {
-		try {
-			const data = await post("/api/signup", bidderData);
-			if (data) {
-				setRegisterStatus("Successfully registered.");
-			} else {
-				setRegisterStatus("Registration failed!");
-			}
-		} catch (error) {
-			setRegisterStatus("Validation Error");
+			setRegisterStatus(error.message);
 		}
 	}
 
@@ -65,12 +52,12 @@ const GrantAccessForm = () => {
 	};
 	const handleBuyerSubmit = (e) => {
 		e.preventDefault();
-		postBuyerDetails(buyerDetails);
+		postDetails("/api/signup", bidderDetails);
 	};
 
 	const handleBidderSubmit = (e) => {
 		e.preventDefault();
-		postBidderDetails(bidderDetails);
+		postDetails("/api/signup", bidderDetails);
 	};
 
 	return (
