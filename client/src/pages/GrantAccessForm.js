@@ -52,7 +52,7 @@ const GrantAccessForm = () => {
 	};
 	const handleBuyerSubmit = (e) => {
 		e.preventDefault();
-		postDetails("/api/signup", bidderDetails);
+		postDetails("/api/signup", buyerDetails);
 	};
 
 	const handleBidderSubmit = (e) => {
