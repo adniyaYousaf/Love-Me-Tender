@@ -64,7 +64,7 @@ const Header = () => {
 							</NavLink>
 							<NavLink
 								exact
-								to="/grant-access"
+								to="/signup"
 								className="nav-link"
 								activeClassName="active"
 							>

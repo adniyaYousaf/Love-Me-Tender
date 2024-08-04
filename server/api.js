@@ -141,11 +141,15 @@ router.post("/signup", async (req, res) => {
 		errors.push("Invalid user type. Allowed values are 'bidder' and 'buyer'");
 	}
 
-	if (userType === "bidder" && (!firstName || !lastName)) {
-		errors.push("Company, description, and address are required for buyers");
+	if (!firstName) {
+		errors.push("First name is required");
 	}
 
-	if (userType === "buyer" && (!company || !address)) {
+	if (!lastName) {
+		errors.push("Last name is required");
+	}
+
+	if (userType === "buyer" && (!company || !description || !address)) {
 		errors.push("Company, description, and address are required for buyers");
 	}
 
@@ -160,6 +164,7 @@ router.post("/signup", async (req, res) => {
 
 	try {
 		await client.query("BEGIN");
+
 		const password = generateRandomPassword();
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -168,10 +173,6 @@ router.post("/signup", async (req, res) => {
 		const userValues = [email, hashedPassword, userType];
 
 		const userResult = await client.query(userQuery, userValues);
-
-		if (!userResult.rows[0] || !userResult.rows[0].id) {
-			throw new Error("Failed to insert user into the users table");
-		}
 		const userId = userResult.rows[0].id;
 
 		let userTableQuery;
