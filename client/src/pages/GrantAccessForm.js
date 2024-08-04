@@ -26,8 +26,8 @@ const GrantAccessForm = () => {
 	async function postDetails(endpoint, data) {
 		try {
 			const res = await post(endpoint, data);
-			console.log(res);
-			if (res || res.code !== "VALIDATION_ERROR") {
+
+			if (res && res.code !== "VALIDATION_ERROR") {
 				setRegisterStatus("Successfully registered.");
 				setValidationErrors([]);
 			} else {
