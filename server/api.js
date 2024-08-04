@@ -12,6 +12,7 @@ const allowlist = {
 		"/tender": "buyer",
 		"/bid": "token",
 		"/logout": "token",
+		"/signup": "admin",
 	},
 	GET: {
 		"/skills": "token",
@@ -142,7 +143,7 @@ router.post("/signup", async (req, res) => {
 	}
 
 	if (userType === "bidder" && (!firstName || !lastName)) {
-		errors.push("first name and last name are required for buyers");
+		errors.push("First name and last name are required for buyers");
 	}
 
 	if (userType === "buyer" && (!company || !address)) {
@@ -170,7 +171,10 @@ router.post("/signup", async (req, res) => {
 		const userResult = await client.query(userQuery, userValues);
 
 		if (!userResult.rows[0] || !userResult.rows[0].id) {
-			throw new Error("Failed to insert user into the users table");
+			return res.status(400).json({
+				code: "VALIDATION_ERROR",
+				errors: errors,
+			});
 		}
 		const userId = userResult.rows[0].id;
 

@@ -21,17 +21,21 @@ const GrantAccessForm = () => {
 	});
 
 	const [resgisterStatus, setRegisterStatus] = useState("");
+	const [validationErrors, setValidationErrors] = useState([]);
 
 	async function postDetails(endpoint, data) {
 		try {
-			const res = await post(`${endpoint}`, data);
-			if (res) {
+			const res = await post(endpoint, data);
+			console.log(res);
+			if (res || res.code !== "VALIDATION_ERROR") {
 				setRegisterStatus("Successfully registered.");
+				setValidationErrors([]);
 			} else {
 				setRegisterStatus("Registration failed!");
 			}
 		} catch (error) {
-			setRegisterStatus(error.message);
+			setValidationErrors(error.response.data.errors);
+			setRegisterStatus(error.response.data.code);
 		}
 	}
 
@@ -191,6 +195,11 @@ const GrantAccessForm = () => {
 			{resgisterStatus && (
 				<div className="message">
 					<p>{resgisterStatus}</p>
+					<ul className="error-list">
+						{validationErrors.map((error, index) => (
+							<li key={index}>{error}</li>
+						))}
+					</ul>
 				</div>
 			)}
 		</main>
