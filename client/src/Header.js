@@ -25,7 +25,8 @@ const Header = () => {
 		};
 	}, []);
 
-	const handleLogout = async () => {
+	const handleLogout = async (e) => {
+		e.preventDefault();
 		try {
 			const response = await post("/api/logout");
 
@@ -33,6 +34,7 @@ const Header = () => {
 				localStorage.removeItem("authToken");
 				localStorage.removeItem("userType");
 				navigate("/");
+				setRole(null);
 			} else {
 				setErrMsg("Logout failed");
 			}

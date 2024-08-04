@@ -74,15 +74,15 @@ const GrantAccessForm = () => {
 	};
 
 	return (
-		<main>
+		<main className="main">
 			<div className="container-role" onChange={(e) => setRole(e.target.value)}>
 				<label htmlFor="role">Select a role</label>
 				<select className="form-input" name="role">
-					<option className="grant-access-option" value="buyer">
-						Buyer
-					</option>
 					<option className="grant-access-option" value="bidder">
 						Bidder
+					</option>
+					<option className="grant-access-option" value="buyer">
+						Buyer
 					</option>
 				</select>
 			</div>
@@ -99,7 +99,7 @@ const GrantAccessForm = () => {
 							<input
 								className="form-input"
 								type="text"
-								name="first-name"
+								name="firstName"
 								placeholder="Enter your first name"
 								value={bidderDetails.firstName}
 								onChange={handleBidderChange}
@@ -111,9 +111,9 @@ const GrantAccessForm = () => {
 							<input
 								className="form-input"
 								type="text"
-								name="first-name"
-								placeholder="Enter your email address"
-								value={bidderDetails.firstName}
+								name="lastName"
+								placeholder="Enter your Last name"
+								value={bidderDetails.lastName}
 								onChange={handleBidderChange}
 								required
 							/>
@@ -164,7 +164,7 @@ const GrantAccessForm = () => {
 								type="text"
 								id="description"
 								name="description"
-								placeholder="Enter your company name"
+								placeholder="Enter your description"
 								value={buyerDetails.description}
 								onChange={handleBuyerChange}
 							/>
@@ -201,9 +201,11 @@ const GrantAccessForm = () => {
 					</form>
 				</div>
 			)}
-			<div>
-				<p>{resgisterStatus}</p>
-			</div>
+			{resgisterStatus && (
+				<div className="message">
+					<p>{resgisterStatus}</p>
+				</div>
+			)}
 		</main>
 	);
 };
