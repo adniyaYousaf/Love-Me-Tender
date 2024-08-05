@@ -27,15 +27,22 @@ const GrantAccessForm = () => {
 		try {
 			const res = await post(endpoint, data);
 
-			if (res && res.code !== "VALIDATION_ERROR") {
+			if (res.status === 403) {
+				setRegisterStatus(res.code);
+				setValidationErrors([]);
+			} else if (res.status === 500) {
+				setRegisterStatus(res.code);
+				setValidationErrors([]);
+			} else if (res && res.code !== "VALIDATION_ERROR") {
 				setRegisterStatus("Successfully registered.");
 				setValidationErrors([]);
 			} else {
 				setRegisterStatus("Registration failed!");
+				setValidationErrors(res.errors || []);
 			}
 		} catch (error) {
-			setValidationErrors(error.response.data.errors);
 			setRegisterStatus(error.response.data.code);
+			setValidationErrors(error.response.data.errors);
 		}
 	}
 
