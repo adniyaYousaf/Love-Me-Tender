@@ -3,7 +3,7 @@ import db, { pool } from "./db";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 
-const itemsPerPage = 5;
+const itemsPerPage = 25;
 const router = Router();
 
 const allowlist = {

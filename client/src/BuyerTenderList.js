@@ -23,15 +23,11 @@ const BuyerTenderList = () => {
 		setLoading(true);
 		try {
 			const data = await get(`/api/buyer-tender?page=${page}`);
-			if (data && data.results && data.pagination) {
-				setBuyerTenders(data.results);
-				setPagination(data.pagination);
-				setErrorMsg(null);
-			} else {
-				throw new Error("Server error");
-			}
+			setBuyerTenders(data.results);
+			setPagination(data.pagination);
+			setErrorMsg(null);
 		} catch (error) {
-			setErrorMsg("Error fetching tenders: " + error.message);
+			setErrorMsg("Error fetching tenders: ");
 		} finally {
 			setLoading(false);
 		}
@@ -43,13 +39,13 @@ const BuyerTenderList = () => {
 
 	const loadNextPage = () => {
 		if (pagination.currentPage < pagination.totalPages && !loading) {
-			navigate(`/BuyerTenderList/page/${pagination.currentPage + 1}`);
+			navigate(`/buyer-tender/page/${pagination.currentPage + 1}`);
 		}
 	};
 
 	const loadPreviousPage = () => {
 		if (pagination.currentPage > 1 && !loading) {
-			navigate(`/BuyerTenderList/page/${pagination.currentPage - 1}`);
+			navigate(`/buyer-tender/page/${pagination.currentPage - 1}`);
 		}
 	};
 

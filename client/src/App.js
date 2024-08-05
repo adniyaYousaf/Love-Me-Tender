@@ -23,9 +23,9 @@ const App = () => (
 				}
 			/>
 			<Route path="/publish-tender" element={<PublishTenderForm />} />
-			<Route path="/BuyerTenderList" element={<BuyerTenderList />} />
+			<Route path="/buyer-tender" element={<BuyerTenderList />} />
 			<Route
-				path="/BuyerTenderList/page/:pageNumber"
+				path="/buyer-tender/page/:pageNumber"
 				element={<BuyerTenderList />}
 			/>
 			<Route path="/BidderBiddingList" element={<BidderBiddingList />} />
