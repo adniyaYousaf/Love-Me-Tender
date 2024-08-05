@@ -1,6 +1,6 @@
 .tenders-container {
 	padding: 20px;
-	font-family: Arial, sans-serif;
+	background: #ffffff;
 }
 
 .tenders-table {
@@ -9,19 +9,20 @@
 	margin-bottom: 20px;
 }
 
+.tenders-table th {
+	color: #767676;
+	font-weight: 400;
+	height: 30px;
+	gap: 0px;
+	border: 0px 0px var(--Border-Default);
+	opacity: 0px;
+}
+
 .tenders-table th,
 .tenders-table td {
-	border: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
 	padding: 8px;
 	text-align: left;
-}
-
-.tenders-table th {
-	background-color: #f4f4f4;
-}
-
-.tenders-table tr:nth-child(even) {
-	background-color: #f9f9f9;
 }
 
 .tenders-table tr:hover {
