@@ -25,27 +25,20 @@ const GrantAccessForm = () => {
 
 	async function postDetails(endpoint, data) {
 		try {
-			const res = await post(endpoint, data);
-
-			if (res && res.code !== "VALIDATION_ERROR") {
+			const response = await post(endpoint, data);
+			if (response) {
 				setRegisterStatus("Successfully registered.");
 				setValidationErrors([]);
-			} else {
-				setRegisterStatus("Registration failed!");
-				setValidationErrors(res.errors || []);
 			}
 		} catch (error) {
 			const { status, data } = error.response;
 
-			if (status === 403) {
-				setRegisterStatus("Access denied");
+			if (status === 400) {
+				setRegisterStatus("Validation error");
 				setValidationErrors(data.errors || []);
-			} else if (status === 500) {
+			} else {
 				setRegisterStatus("A server error occurred. Please try again later.");
 				setValidationErrors([]);
-			} else {
-				setRegisterStatus(error.response.data.code);
-				setValidationErrors(error.response.data.errors);
 			}
 		}
 	}
