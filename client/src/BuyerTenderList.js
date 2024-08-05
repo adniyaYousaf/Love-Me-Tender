@@ -27,7 +27,7 @@ const BuyerTenderList = () => {
 			setPagination(data.pagination);
 			setErrorMsg(null);
 		} catch (error) {
-			setErrorMsg("Error fetching tenders: ");
+			setErrorMsg("Error fetching tenders");
 		} finally {
 			setLoading(false);
 		}
