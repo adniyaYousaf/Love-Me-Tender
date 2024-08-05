@@ -3,7 +3,7 @@ import db, { pool } from "./db";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 
-const itemsPerPage = 25;
+const itemsPerPage = 5;
 const router = Router();
 
 const allowlist = {
@@ -308,7 +308,7 @@ router.get("/buyer-tender", async (req, res) => {
 	const offset = (page - 1) * itemsPerPage;
 
 	const totalBuyerTenders = await db.query(
-		"SELECT COUNT(buyer_id) FROM bid WHERE buyer_id = $1",
+		"SELECT COUNT(buyer_id) FROM tender WHERE buyer_id = $1",
 		[buyerId]
 	);
 	const totalPages = Math.ceil(totalBuyerTenders.rows[0].count / itemsPerPage);

@@ -24,6 +24,10 @@ const App = () => (
 			/>
 			<Route path="/publish-tender" element={<PublishTenderForm />} />
 			<Route path="/BuyerTenderList" element={<BuyerTenderList />} />
+			<Route
+				path="/BuyerTenderList/page/:pageNumber"
+				element={<BuyerTenderList />}
+			/>
 			<Route path="/BidderBiddingList" element={<BidderBiddingList />} />
 			<Route path="/signup" element={<SignUp />} />
 			<Route path="/dashboard" element={<Dashboard />} />
