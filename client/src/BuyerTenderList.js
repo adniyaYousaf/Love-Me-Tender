@@ -13,7 +13,7 @@ const BuyerTenderList = () => {
 	useEffect(() => {
 		const fetchBuyerTenders = async () => {
 			try {
-				const data = await get("api/buyer-tender?page=1");
+				const data = await get("/api/buyer-tender?page=1");
 				setLoading(false);
 				setBuyerTenders(data.results);
 			} catch (error) {
