@@ -9,6 +9,7 @@ import TendersList from "./TenderList";
 import Header from "./Header";
 import Footer from "./Footer";
 import ProtectedRoute from "./ProtectedRoute";
+import BidList from "./BidList";
 
 const App = () => (
 	<>
@@ -32,6 +33,8 @@ const App = () => (
 			<Route path="/grant-access" element={<GrantAccessForm />} />
 			<Route path="/dashboard" element={<Dashboard />} />
 			<Route path="/dashboard/page/:pageNumber" element={<TendersList />} />
+			<Route path="/bidding" element={<BidList />} />
+			<Route path="/bidding/:tenderId" element={<BidList />} />
 		</Routes>
 		<Footer className="footer" />
 	</>
