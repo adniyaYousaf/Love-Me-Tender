@@ -90,9 +90,9 @@ const BuyerTenderList = () => {
 							</span>
 						</p>
 						<p className="title">
-							<strong>Bidder Id:</strong> {bid.bidder_id}
-							<strong>Bidder Name</strong>
-							{bid.first_name + " " + bid.last_name}
+							<strong>Bidder Id:</strong> {bid.bidder_id} |
+							<strong>Bidder Name: </strong>
+							{bid.first_name + " " + bid.last_name} |
 							<strong>Proposed Project Duration: </strong>
 							{bid.suggested_duration_days} days
 						</p>

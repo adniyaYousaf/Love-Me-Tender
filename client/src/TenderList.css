@@ -149,7 +149,8 @@ td[data-status="Closed"] {
 }
 
 .msg {
-  text-align: center;}
+	text-align: center;
+}
 .toggle-text {
 	background: none;
 	border: none;

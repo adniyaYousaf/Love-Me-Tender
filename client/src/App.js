@@ -12,7 +12,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import BidList from "./BidList";
 import SubmitBidForm from "./SubmitBidForm";
 
-
 const App = () => (
 	<>
 		<Header className="header" />
