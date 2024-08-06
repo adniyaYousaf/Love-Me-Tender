@@ -34,7 +34,6 @@ const App = () => (
 			<Route path="/grant-access" element={<GrantAccessForm />} />
 			<Route path="/dashboard" element={<Dashboard />} />
 			<Route path="/dashboard/page/:pageNumber" element={<TendersList />} />
-			<Route path="/bidding" element={<BidList />} />
 			<Route path="/bidding/:tenderId" element={<BidList />} />
 			<Route path="/tenders/:tenderId/submit-bid" element={<SubmitBidForm />} />
 		</Routes>
