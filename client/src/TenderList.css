@@ -145,3 +145,7 @@ td[data-status="Closed"] {
 	font-weight: 700;
 	margin-left: 1rem;
 }
+
+.msg {
+	text-align: center;
+}

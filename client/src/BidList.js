@@ -15,7 +15,7 @@ const BuyerTenderList = () => {
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 	const [pagination, setPagination] = useState({
-		itemsPerPage: 5,
+		itemsPerPage: 10,
 		currentPage: currentPage,
 		totalPages: 1,
 	});
@@ -28,7 +28,7 @@ const BuyerTenderList = () => {
 			setPagination(data.pagination);
 			setErrorMsg(null);
 		} catch (error) {
-			setErrorMsg("Error fetching tenders");
+			setErrorMsg("Error fetching bids!");
 		} finally {
 			setLoading(false);
 		}
@@ -40,14 +40,16 @@ const BuyerTenderList = () => {
 
 	const handleBidStatusChange = async (bidId, status) => {
 		const response = await post(`/api/bid/${bidId}/status`, { status });
-		console.log(response);
 		if (response.code === "SUCCESS") {
 			setUpdatedStatus({ id: bidId, status: status });
-			console.log("Bid status updated successfully!");
 		} else {
-			console.log("Failed to update bid status.");
+			setErrorMsg("Error fetching bids!");
 		}
 	};
+
+	if (bid.length === 0) {
+		return <div className="msg">No Bid Submited yet!!</div>;
+	}
 
 	const loadNextPage = () => {
 		if (pagination.currentPage < pagination.totalPages && !loading) {
@@ -77,10 +79,10 @@ const BuyerTenderList = () => {
 				{bid.map((bid) => (
 					<div className="card" key={bid.bid_id}>
 						<p className="posted-on">
-							Submited on{" "}
+							Submited on
 							<span className="posted-on-date">
 								{new Date(bid.bidding_date).toLocaleDateString()}
-							</span>{" "}
+							</span>
 							<span className="bid-status">
 								{updateStatus.id === bid.bid_id
 									? updateStatus.status
@@ -88,19 +90,17 @@ const BuyerTenderList = () => {
 							</span>
 						</p>
 						<p className="title">
-							{" "}
-							<strong>Bidder Id:</strong> {bid.bidder_id} |{" "}
-							<strong>Bidder Name</strong>:{" "}
-							{bid.first_name + " " + bid.last_name} |{" "}
-							<strong>Proposed Project Duration: </strong>:{" "}
-							{bid.suggested_duration_days} days{" "}
+							<strong>Bidder Id:</strong> {bid.bidder_id}
+							<strong>Bidder Name</strong>
+							{bid.first_name + " " + bid.last_name}
+							<strong>Proposed Project Duration: </strong>
+							{bid.suggested_duration_days} days
 						</p>
 						<h4>Cover letter:</h4>
 						<p className="cover-letter"> {bid.cover_letter}</p>
 						<div className="btn-container">
 							{bid.attachment && (
 								<button className="btn">
-									{" "}
 									<a href={bid.attachment} download>
 										Download Attachments
 									</a>
