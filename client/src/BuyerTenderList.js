@@ -71,12 +71,12 @@ const BuyerTenderList = () => {
 			<div className="container">
 				{errorMsg && <p className="error-message">{errorMsg}</p>}
 				{buyerTenders.length === 0 ? (
-					<div className="msg">No Bid Submitted yet!</div>
+					<div className="msg">You do not have any tenders!</div>
 				) : (
 					buyerTenders.map((tender) => (
 						<div className="card" key={tender.tender_id}>
 							<p className="posted-on">
-								Tenser ID: <span className="posted-on-date">{tender.id}</span>
+								ID: <span className="posted-on-date">{tender.id}</span>
 								<span data-status={tender.status} className="bid-status">
 									{tender.status}
 								</span>
@@ -88,25 +88,24 @@ const BuyerTenderList = () => {
 							</h2>
 							<div className="details">
 								<p>
-									<strong>Tender Creation Date:</strong>{" "}
+									<strong>Creation Date: </strong>
 									{new Date(tender.creation_date).toLocaleDateString()}
 								</p>
 								<p>
-									<strong>Tender Announcement Date: </strong>
+									<strong>Announcement Date: </strong>
 									{new Date(tender.announcement_date).toLocaleDateString()}
 								</p>
 								<p>
-									<strong>Tender Deadline Date: </strong>
+									<strong>Deadline Date: </strong>
 									{new Date(tender.deadline).toLocaleDateString()}
 								</p>
 								<p>
-									<strong>Tender Closing Date: </strong>
+									<strong>Closing Date: </strong>
 									{new Date(tender.closing_date).toLocaleDateString()}
 								</p>
 							</div>
-							<h4>Description:</h4>
+							<h4>Description: </h4>
 							<p className="cover-letter">
-								{" "}
 								{expandedTenderId === tender.id ? (
 									<p>
 										{tender.description || "No description available"}
@@ -139,11 +138,11 @@ const BuyerTenderList = () => {
 								)}
 							</p>
 							<p>
-								<strong>Cost: </strong>£{tender.cost}{" "}
+								<strong>Cost: </strong>£{tender.cost}
 								<span>
 									<strong>No. Of Bids Received: </strong>
 									{tender.no_of_bids_received}
-								</span>{" "}
+								</span>
 							</p>
 						</div>
 					))
