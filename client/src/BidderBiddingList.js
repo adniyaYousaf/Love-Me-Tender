@@ -9,7 +9,7 @@ const BidderBiddingList = () => {
 	const [errorMsg, setErrorMsg] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [pagination, setPagination] = useState({
-		itemsPerPage: 5,
+		itemsPerPage: 10,
 		currentPage: currentPage,
 		totalPages: 1,
 	});
