@@ -11,9 +11,7 @@ const BuyerTenderList = () => {
 	const [updateStatus, setUpdatedStatus] = useState("");
 	const [errorMsg, setErrorMsg] = useState(null);
 	const [statusError, setStatusError] = useState(null);
-	const [isVisible, setIsVisible] = React.useState(false);
 	const [loading, setLoading] = useState(true);
-	const [isAnyBidAccepted, setIsAnyBidAccepted] = useState(false);
 	const navigate = useNavigate();
 	const [pagination, setPagination] = useState({
 		itemsPerPage: 10,
@@ -41,19 +39,9 @@ const BuyerTenderList = () => {
 
 	const handleBidStatusChange = async (bidId, status) => {
 		try {
-			const response = await post(`/api/bid/${bidId}/status`, { status });
-			if (response.code === "SUCCESS") {
-				setUpdatedStatus(
-					`Updated the status for bid id ${bidId} to ${status} !`
-				);
-				fetchBids(tenderId, currentPage);
-				setIsVisible(true);
-				if (status === "Awarded") {
-					setIsAnyBidAccepted(true);
-				}
-			} else {
-				setStatusError("Error updating bid status!");
-			}
+			await post(`/api/bid/${bidId}/status`, { status });
+			setUpdatedStatus(`Updated the status for bid id ${bidId} to ${status}!`);
+			fetchBids(tenderId, currentPage);
 		} catch (error) {
 			setStatusError("An error occurred while updating bid status!");
 		}
@@ -79,7 +67,7 @@ const BuyerTenderList = () => {
 	};
 
 	setTimeout(() => {
-		setIsVisible(false);
+		setUpdatedStatus("");
 	}, 10000);
 
 	if (errorMsg) {
@@ -95,9 +83,7 @@ const BuyerTenderList = () => {
 
 	return (
 		<main className=".main">
-			{updateStatus && isVisible && (
-				<div className="message">{updateStatus}</div>
-			)}
+			{updateStatus && <div className="message">{updateStatus}</div>}
 			<h2 className="heading">Bids</h2>
 			<div className="container">
 				{bids.length === 0 ? (
@@ -122,24 +108,22 @@ const BuyerTenderList = () => {
 							<h4>Cover letter:</h4>
 							<p className="cover-letter"> {bid.cover_letter}</p>
 							<div className="btn-container">
-								{!isAnyBidAccepted &&
-									bid.status !== "Rejected" &&
-									bid.status !== "Awarded" && (
-										<>
-											<button
-												className="btn"
-												onClick={() => handleAcceptBid(bid.bid_id)}
-											>
-												Accept
-											</button>
-											<button
-												className="btn"
-												onClick={() => handleRejectBid(bid.bid_id)}
-											>
-												Reject
-											</button>
-										</>
-									)}
+								{bid.status !== "Rejected" && bid.status !== "Awarded" && (
+									<>
+										<button
+											className="btn"
+											onClick={() => handleAcceptBid(bid.bid_id)}
+										>
+											Accept
+										</button>
+										<button
+											className="btn"
+											onClick={() => handleRejectBid(bid.bid_id)}
+										>
+											Reject
+										</button>
+									</>
+								)}
 							</div>
 						</div>
 					))
