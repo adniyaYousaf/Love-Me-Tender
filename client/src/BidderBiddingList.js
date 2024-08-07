@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { get } from "./TenderClient";
+import { get, post } from "./TenderClient";
 
 const BidderBiddingList = () => {
 	const { pageNumber } = useParams();
@@ -45,6 +45,21 @@ const BidderBiddingList = () => {
 		}
 	};
 
+
+	const handleStatusChange = async (bidId, newStatus) => {
+		try {
+			setBids((prevList) =>
+				prevList.map((bid) =>
+					bid.bid_id === bidId ? { ...bid, status: newStatus } : bid
+				)
+			);
+
+			await post(`/api/bid/${bidId}/status`, { status: newStatus });
+		} catch (error) {
+			setErrorMsg("Server Error");
+		}
+	};
+
 	if (errorMsg !== null) {
 		return <div>{errorMsg}</div>;
 	}
@@ -79,7 +94,7 @@ const BidderBiddingList = () => {
 							<div className="details">
 								<p>
 									<strong>Closing Date: </strong>
-									{new Date(bid.creation_date).toLocaleDateString()}
+									{new Date(bid.closing_date).toLocaleDateString()}
 								</p>
 								<p>
 									<strong>Announcement Date: </strong>
@@ -97,6 +112,9 @@ const BidderBiddingList = () => {
 									{bid.suggested_duration_days} days
 								</span>
 							</p>
+							<button className="btn withdraw-btn" onClick={() => handleStatusChange(bid.bid_id, "Withdrawn")}>
+								Withdraw
+							</button>
 						</div>
 					))
 				)}
@@ -104,18 +122,19 @@ const BidderBiddingList = () => {
 				{loading && <p>Loading...</p>}
 				<div className="pagination-buttons">
 					{pagination.currentPage > 1 && (
-						<button onClick={loadPreviousPage} disabled={loading}>
+						<button className="btn" onClick={loadPreviousPage} disabled={loading}>
 							Previous Page
 						</button>
 					)}
 					{pagination.currentPage < pagination.totalPages && (
-						<button onClick={loadNextPage} disabled={loading}>
+						<button className="btn" onClick={loadNextPage} disabled={loading}>
 							Next Page
 						</button>
 					)}
 				</div>
+
 			</div>
-		</main>
+		</main >
 	);
 };
 
