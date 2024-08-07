@@ -52,7 +52,7 @@ const BidderBiddingList = () => {
 	if (loading) {
 		return <div>Loading!!</div>;
 	}
-	console.log(bids);
+
 	return (
 		<main>
 			<h2 className="msg">My Bidding List</h2>
