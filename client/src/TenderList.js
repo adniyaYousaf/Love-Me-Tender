@@ -66,7 +66,7 @@ const TendersList = () => {
 	const hasSubmittedBid = (tenderId) => {
 		return bids.some((bid) => bid.tender_id === tenderId && role === "bidder");
 	};
-	console.log(tenders);
+
 	return (
 		<div className="container">
 			{error && <p className="error-message">{error}</p>}
