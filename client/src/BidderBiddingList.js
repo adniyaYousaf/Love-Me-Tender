@@ -15,7 +15,7 @@ const BidderBiddingList = () => {
 	});
 	const navigate = useNavigate();
 
-	const fetchTenders = async (page) => {
+	const fetchBids = async (page) => {
 		setLoading(true);
 		try {
 			const data = await get(`/api/bidder-bid?page=${page}`);
@@ -30,7 +30,7 @@ const BidderBiddingList = () => {
 	};
 
 	useEffect(() => {
-		fetchTenders(currentPage);
+		fetchBids(currentPage);
 	}, [currentPage]);
 
 	const loadNextPage = () => {
