@@ -189,6 +189,7 @@ router.post("/signup", async (req, res) => {
 			userTableValues = [userId, company, description, address];
 		} else {
 			await client.query("ROLLBACK");
+			console.error(error); // eslint-disable-line no-console, no-undef
 			return res.status(500).json({ code: "SERVER_ERROR" });
 		}
 
@@ -213,6 +214,7 @@ router.post("/signup", async (req, res) => {
 		res.status(201).json({});
 	} catch (error) {
 		await client.query("ROLLBACK");
+		console.error(error); // eslint-disable-line no-console, no-undef
 		res.status(500).json({ code: "SERVER_ERROR" });
 	} finally {
 		client.release();
@@ -392,9 +394,9 @@ router.get("/tenders", async (req, res) => {
 	const offset = (page - 1) * limit;
 	const countSql = "SELECT COUNT(*) FROM tender";
 	const tendersSql = `
-		SELECT id, title, creation_date, announcement_date, deadline, description, status, closing_date
-		FROM tender 
-		ORDER BY creation_date DESC 
+		SELECT id, title, creation_date, announcement_date, deadline, tender.description, status, closing_date, tender.last_update, buyer.company
+        FROM tender JOIN buyer ON tender.buyer_id = buyer.user_id
+        ORDER BY creation_date DESC
 		LIMIT $1 OFFSET $2
 	`;
 
@@ -662,6 +664,7 @@ router.post("/bid", async (req, res) => {
 		const errors = [];
 
 		if (!validStatuses.includes(status)) {
+			console.error(error); // eslint-disable-line no-console, no-undef
 			res.status(500).json({ code: "SERVER_ERROR" });
 		}
 
@@ -728,11 +731,13 @@ router.post("/bid", async (req, res) => {
 			});
 		} catch (error) {
 			await client.query("ROLLBACK");
+			console.error(error); // eslint-disable-line no-console, no-undef
 			res.status(500).json({ code: "SERVER_ERROR" });
 		} finally {
 			client.release();
 		}
 	} catch (error) {
+		console.error(error); // eslint-disable-line no-console, no-undef
 		res.status(500).json({ code: "SERVER_ERROR" });
 	}
 });
