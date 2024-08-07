@@ -1,23 +1,49 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { get } from "./TenderClient";
 
 const BidderBiddingList = () => {
-	const [loading, setLoading] = useState(true);
-	const [bidderList, setBidderList] = useState([]);
+	const { pageNumber } = useParams();
+	const currentPage = pageNumber ? parseInt(pageNumber, 10) : 1;
+	const [bids, setBids] = useState([]);
 	const [errorMsg, setErrorMsg] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [pagination, setPagination] = useState({
+		itemsPerPage: 5,
+		currentPage: currentPage,
+		totalPages: 1,
+	});
+	const navigate = useNavigate();
+
+	const fetchTenders = async (page) => {
+		setLoading(true);
+		try {
+			const data = await get(`/api/bidder-bid?page=${page}`);
+			setBids(data.results);
+			setPagination(data.pagination);
+			setErrorMsg(null);
+		} catch (error) {
+			setErrorMsg("Error fetching tenders");
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		const fetchBidderBids = async () => {
-			try {
-				const data = await get("api/bidder-bid?page=1");
-				setLoading(false);
-				setBidderList(data.results);
-			} catch (error) {
-				setErrorMsg(error.message);
-			}
-		};
-		fetchBidderBids();
-	}, []);
+		fetchTenders(currentPage);
+	}, [currentPage]);
+
+	const loadNextPage = () => {
+		if (pagination.currentPage < pagination.totalPages && !loading) {
+			navigate(`/bidder-biddings/page/${pagination.currentPage + 1}`);
+		}
+	};
+
+	const loadPreviousPage = () => {
+		if (pagination.currentPage > 1 && !loading) {
+			navigate(`/bidder-biddings/page/${pagination.currentPage - 1}`);
+		}
+	};
 
 	if (errorMsg !== null) {
 		return <div>{errorMsg}</div>;
@@ -26,30 +52,68 @@ const BidderBiddingList = () => {
 	if (loading) {
 		return <div>Loading!!</div>;
 	}
-
-	if (bidderList.length === 0) {
-		return <div>No Bidding placed yet!!</div>;
-	}
-
+	console.log(bids);
 	return (
 		<main>
-			<h1>Bidder Bidding List</h1>
-			<div className="bids-container">
-				{" "}
-				{bidderList.map((bid, index) => (
-					<div className="bid-card" key={index}>
-						<p>Status: {bid.status}</p>
-						<p>
-							submitted on: {new Date(bid.submission_date).toLocaleDateString()}
-						</p>
-						<p>Bidding Amount: {bid.bidding_amount}</p>
-						<div>
-							Cover Letter:
-							<p>{bid.cover_letter}</p>
+			<h2 className="msg">My Bidding List</h2>
+			<div className="container">
+				{errorMsg && <p className="error-message">{errorMsg}</p>}
+				{bids.length === 0 ? (
+					<div className="msg">You do not have any bids!</div>
+				) : (
+					bids.map((bid) => (
+						<div className="card" key={bid.tender_id}>
+							<p className="posted-on">
+								Bid ID: <span className="posted-on-date">{bid.bid_id}</span> |
+								Tender ID:{" "}
+								<span className="posted-on-date">{bid.tender_id}</span>
+								<span data-status={bid.status} className="bid-status">
+									{bid.status}
+								</span>
+							</p>
+							<h2 className="title">
+								<a className="tender-id" href="/">
+									{bid.title}
+								</a>
+							</h2>
+							<div className="details">
+								<p>
+									<strong>Closing Date: </strong>
+									{new Date(bid.creation_date).toLocaleDateString()}
+								</p>
+								<p>
+									<strong>Announcement Date: </strong>
+									{new Date(bid.announcement_date).toLocaleDateString()}
+								</p>
+								<p>
+									<strong>Submitted on: </strong>
+									{new Date(bid.submission_date).toLocaleDateString()}
+								</p>
+							</div>
+							<p>
+								<strong>Cost: </strong>£{bid.bidding_amount}{" "}
+								<span>
+									<strong>Completion Time:</strong>{" "}
+									{bid.suggested_duration_days} days
+								</span>
+							</p>
 						</div>
-						<p>Completion Time: {bid.suggested_duration_days}days</p>
-					</div>
-				))}
+					))
+				)}
+
+				{loading && <p>Loading...</p>}
+				<div className="pagination-buttons">
+					{pagination.currentPage > 1 && (
+						<button onClick={loadPreviousPage} disabled={loading}>
+							Previous Page
+						</button>
+					)}
+					{pagination.currentPage < pagination.totalPages && (
+						<button onClick={loadNextPage} disabled={loading}>
+							Next Page
+						</button>
+					)}
+				</div>
 			</div>
 		</main>
 	);
