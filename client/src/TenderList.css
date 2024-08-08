@@ -235,9 +235,21 @@ span[data-status="Closed"] {
 .withdraw-btn {
 	width: 7rem;
 }
+
 .bid-description {
 	display: grid;
 	gap: 20px;
 	padding-bottom: 1rem;
 	border-bottom: 1px solid var(--Border-Default);
+}
+
+.sort-controls {
+	width: 20rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.sort {
+	width: 13rem;
 }
