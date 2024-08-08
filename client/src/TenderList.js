@@ -134,20 +134,24 @@ const TendersList = () => {
 								</p>
 							)}
 						</p>
-						<p
-							className={
-								role === "bidder" ? "showSubmitButton" : "hideSubmitButton"
-							}
-						>
-							{hasSubmittedBid(tender.id) ? (
-								<button disabled>Bid Submitted</button>
-							) : (
-								<Link to={`/tenders/${tender.id}/submit-bid`}>Submit Bid</Link>
-							)}
-						</p>
-						<p className="right last-update">
-							Updated on: {new Date(tender.last_update).toLocaleDateString()}
-						</p>
+						<div className="flex">
+							<p
+								className={
+									role === "bidder" ? "showSubmitButton" : "hideSubmitButton"
+								}
+							>
+								{hasSubmittedBid(tender.id) ? (
+									<p disabled>Bid Submitted</p>
+								) : (
+									<Link className="btn" to={`/tenders/${tender.id}/submit-bid`}>
+										Submit Bid
+									</Link>
+								)}
+							</p>
+							<p className="right last-update">
+								Updated on: {new Date(tender.last_update).toLocaleDateString()}
+							</p>
+						</div>
 					</div>
 				))
 			)}

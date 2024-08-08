@@ -213,10 +213,19 @@ span[data-status="Closed"] {
 	color: #ec221f;
 	text-decoration: underline;
 }
+
 .right {
 	text-align: right;
 }
+
 .last-update {
 	color: #757575;
 	font-size: 1rem;
+}
+
+.flex {
+	height: 3rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
