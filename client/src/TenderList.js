@@ -16,13 +16,14 @@ const TendersList = () => {
 	});
 	const [error, setError] = useState(null);
 	const [expandedTenderId, setExpandedTenderId] = useState(null);
+	const [sortField, setSortField] = useState("creation_date");
 	const navigate = useNavigate();
 	const role = localStorage.getItem("userType");
 
-	const fetchTenders = useCallback(async (page) => {
+	const fetchTenders = useCallback(async (page, sort) => {
 		setLoading(true);
 		try {
-			const tenderData = await get(`/api/tenders?page=${page}`);
+			const tenderData = await get(`/api/tenders?page=${page}&sort=${sort}`);
 			const bidsData = await get("/api/bidder-bid?page=1");
 
 			setTenders(tenderData.results);
@@ -37,8 +38,8 @@ const TendersList = () => {
 	}, []);
 
 	useEffect(() => {
-		fetchTenders(currentPage);
-	}, [fetchTenders, currentPage]);
+		fetchTenders(pagination.currentPage, sortField);
+	}, [fetchTenders, pagination.currentPage, sortField]);
 
 	const loadNextPage = () => {
 		if (pagination.currentPage < pagination.totalPages && !loading) {
@@ -64,12 +65,33 @@ const TendersList = () => {
 	};
 
 	const hasSubmittedBid = (tenderId) => {
-		return bids.some((bid) => bid.tender_id === tenderId && role === "bidder");
+		return bids.some(
+			(bid) =>
+				bid.tender_id === tenderId &&
+				bid.status !== "Withdrawn" &&
+				role === "bidder"
+		);
+	};
+
+	const handleSortChange = (event) => {
+		setSortField(event.target.value);
+		setPagination((prevPagination) => ({
+			...prevPagination,
+			currentPage: 1,
+		}));
 	};
 
 	return (
 		<div className="container">
 			{error && <p className="error-message">{error}</p>}
+			<div className="sort-controls">
+				<label htmlFor="sort">Sort by:</label>
+				<select id="sort" value={sortField} onChange={handleSortChange}>
+					<option value="creation_date">Creation Date</option>
+					<option value="closing_date">Closing Date</option>
+					<option value="deadline">Project Deadline Date</option>
+				</select>
+			</div>
 			{tenders.length === 0 ? (
 				<div className="msg">You do not have any tenders!</div>
 			) : (
@@ -141,11 +163,9 @@ const TendersList = () => {
 								}
 							>
 								{hasSubmittedBid(tender.id) ? (
-									<button className="btn" disabled>
-										Bid Submitted
-									</button>
+									<p disabled>Bid Submitted</p>
 								) : (
-									<Link to={`/tenders/${tender.id}/submit-bid`}>
+									<Link className="btn" to={`/tenders/${tender.id}/submit-bid`}>
 										Submit Bid
 									</Link>
 								)}
