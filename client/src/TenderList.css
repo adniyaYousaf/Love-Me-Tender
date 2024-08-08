@@ -229,3 +229,6 @@ span[data-status="Closed"] {
 	justify-content: space-between;
 	align-items: center;
 }
+.withdraw-btn {
+	width: 7rem;
+}
