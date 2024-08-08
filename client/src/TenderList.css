@@ -39,6 +39,8 @@
 
 .pagination-buttons {
 	margin-top: 20px;
+	display: flex;
+	gap: 2rem;
 }
 
 .pagination-buttons button {
@@ -223,12 +225,15 @@ span[data-status="Closed"] {
 	font-size: 1rem;
 }
 
+
 .flex {
 	height: 3rem;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 }
+
 .withdraw-btn {
 	width: 7rem;
 }
+
