@@ -225,7 +225,6 @@ span[data-status="Closed"] {
 	font-size: 1rem;
 }
 
-
 .flex {
 	height: 3rem;
 	display: flex;
@@ -236,4 +235,3 @@ span[data-status="Closed"] {
 .withdraw-btn {
 	width: 7rem;
 }
-
