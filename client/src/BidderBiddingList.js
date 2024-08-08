@@ -79,7 +79,7 @@ const BidderBiddingList = () => {
 								</span>
 							</p>
 							<h2 className="title">
-								<a className="tender-id" href="/">
+								<a className="tender-id" href={`/bid-detail/${bid.bid_id}`}>
 									{bid.title}
 								</a>
 							</h2>
