@@ -1,33 +1,35 @@
+// BidDetail.js
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { get, post } from "./TenderClient";
+import WithdrawBid from "./WithdrawBid";
 
 const BidDetail = () => {
-	const [bids, setBids] = useState([]);
+	const [bid, setBid] = useState({});
 	const [errorMsg, setErrorMsg] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const { bidId } = useParams();
 
-	const fetchBids = async () => {
+	const fetchBid = async () => {
 		setLoading(true);
 		try {
-			const data = await get("/api/bidder-bid");
-			setBids(data.results);
+			const data = await get(`/bid/:${bidId}`);
+			setBid(data);
 			setErrorMsg(null);
 		} catch (error) {
-			setErrorMsg("Error fetching tenders");
+			setErrorMsg("Error fetching bid");
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		fetchBids();
-	}, []);
+		fetchBid();
+	});
 
 	const handleStatusChange = async (bidId, newStatus) => {
 		try {
-			setBids((prevList) =>
+			setBid((prevList) =>
 				prevList.map((bid) =>
 					bid.bid_id === bidId ? { ...bid, status: newStatus } : bid
 				)
@@ -46,13 +48,10 @@ const BidDetail = () => {
 		return <div>Loading!!</div>;
 	}
 
-	const results = bids.filter((bid) => bid.bid_id == bidId);
-	const bid = results[0];
 	return (
 		<main>
 			<h2 className="msg">Bid Detail</h2>
 			<div className="container">
-				{errorMsg && <p className="error-message">{errorMsg}</p>}
 				<div className="card" key={bid.tender_id}>
 					<p className="posted-on">
 						Bid ID: <span className="posted-on-date">{bid.bid_id}</span> |
@@ -97,17 +96,8 @@ const BidDetail = () => {
 						<h3>Cover Letter: </h3>
 						<p>{bid.cover_letter}</p>
 					</div>
-
-					{bid.status !== "Withdrawn" && (
-						<button
-							className="btn withdraw-btn"
-							onClick={() => handleStatusChange(bid.bid_id, "Withdrawn")}
-						>
-							Withdraw
-						</button>
-					)}
+					<WithdrawBid bid={bid} handleStatusChange={handleStatusChange} />
 				</div>
-				{loading && <p>Loading...</p>}
 			</div>
 		</main>
 	);
