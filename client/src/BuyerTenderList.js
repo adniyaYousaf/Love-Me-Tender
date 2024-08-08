@@ -151,12 +151,16 @@ const BuyerTenderList = () => {
 				{loading && <p>Loading...</p>}
 				<div className="pagination-buttons">
 					{pagination.currentPage > 1 && (
-						<button onClick={loadPreviousPage} disabled={loading}>
+						<button
+							className="btn"
+							onClick={loadPreviousPage}
+							disabled={loading}
+						>
 							Previous Page
 						</button>
 					)}
 					{pagination.currentPage < pagination.totalPages && (
-						<button onClick={loadNextPage} disabled={loading}>
+						<button className="btn" onClick={loadNextPage} disabled={loading}>
 							Next Page
 						</button>
 					)}
