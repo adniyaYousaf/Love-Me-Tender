@@ -394,8 +394,8 @@ router.get("/tenders", async (req, res) => {
 	const offset = (page - 1) * limit;
 	const countSql = "SELECT COUNT(*) FROM tender";
 	const tendersSql = `
-		SELECT id, title, creation_date, announcement_date, deadline, tender.description, status, closing_date, tender.last_update, buyer.company
-        FROM tender JOIN buyer ON tender.buyer_id = buyer.user_id
+		SELECT id, title, creation_date, announcement_date, deadline, description, status, closing_date, last_update
+        FROM tender
         ORDER BY creation_date DESC
 		LIMIT $1 OFFSET $2
 	`;
