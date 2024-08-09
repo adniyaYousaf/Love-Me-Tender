@@ -21,6 +21,7 @@ const allowlist = {
 		"/bidder-bid": "token",
 		"/tenders": "token",
 		"/bid": "token",
+		"/bid-detail": "token",
 	},
 };
 
@@ -811,6 +812,44 @@ router.post("/logout", async (req, res) => {
 		await db.query("DELETE FROM session WHERE user_id = $1", [req.user.id]);
 
 		res.status(200).json({ code: "LOGOUT_SUCCESS" });
+	} catch (error) {
+		res.status(500).json({ code: "SERVER_ERROR" });
+	}
+});
+
+router.get("/bid-detail/:id", async (req, res) => {
+	const bidId = req.params.id;
+
+	try {
+		const result = await db.query(
+			`SELECT 
+          b.bid_id, 
+          b.tender_id, 
+          b.bidding_amount, 
+          b.status, 
+          b.bidding_date AS submission_date, 
+          b.suggested_duration_days, 
+          t.title, 
+          t.announcement_date, 
+          t.closing_date, 
+          b.cover_letter, 
+          t.status AS tender_status, 
+          t.description
+       FROM 
+          bid b
+       JOIN 
+          tender t ON b.tender_id = t.id
+       WHERE 
+          b.bid_id = $1
+      `,
+			[bidId]
+		);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({ code: "BID_NOT_FOUND" });
+		}
+
+		res.status(200).json(result.rows[0]);
 	} catch (error) {
 		res.status(500).json({ code: "SERVER_ERROR" });
 	}

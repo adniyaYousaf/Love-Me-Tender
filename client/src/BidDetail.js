@@ -1,8 +1,6 @@
-// BidDetail.js
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { get, post } from "./TenderClient";
-import WithdrawBid from "./WithdrawBid";
+import { get } from "./TenderClient";
 
 const BidDetail = () => {
 	const [bid, setBid] = useState({});
@@ -13,7 +11,7 @@ const BidDetail = () => {
 	const fetchBid = async () => {
 		setLoading(true);
 		try {
-			const data = await get(`/bid/:${bidId}`);
+			const data = await get(`/api/bid-detail/${bidId}`);
 			setBid(data);
 			setErrorMsg(null);
 		} catch (error) {
@@ -23,22 +21,13 @@ const BidDetail = () => {
 		}
 	};
 
-	useEffect(() => {
-		fetchBid();
-	});
-
-	const handleStatusChange = async (bidId, newStatus) => {
-		try {
-			setBid((prevList) =>
-				prevList.map((bid) =>
-					bid.bid_id === bidId ? { ...bid, status: newStatus } : bid
-				)
-			);
-			await post(`/api/bid/${bidId}/status`, { status: newStatus });
-		} catch (error) {
-			setErrorMsg("Server Error");
-		}
-	};
+	useEffect(
+		() => {
+			fetchBid();
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[bidId]
+	);
 
 	if (errorMsg !== null) {
 		return <div>{errorMsg}</div>;
@@ -96,7 +85,6 @@ const BidDetail = () => {
 						<h3>Cover Letter: </h3>
 						<p>{bid.cover_letter}</p>
 					</div>
-					<WithdrawBid bid={bid} handleStatusChange={handleStatusChange} />
 				</div>
 			</div>
 		</main>
