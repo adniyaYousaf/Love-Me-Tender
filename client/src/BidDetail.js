@@ -8,26 +8,22 @@ const BidDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const { bidId } = useParams();
 
-	const fetchBid = async () => {
-		setLoading(true);
-		try {
-			const data = await get(`/api/bid-detail/${bidId}`);
-			setBid(data);
-			setErrorMsg(null);
-		} catch (error) {
-			setErrorMsg("Error fetching bid");
-		} finally {
-			setLoading(false);
-		}
-	};
+	useEffect(() => {
+		const fetchBid = async () => {
+			setLoading(true);
+			try {
+				const data = await get(`/api/bid/${bidId}`);
+				setBid(data.resource);
+				setErrorMsg(null);
+			} catch (error) {
+				setErrorMsg("Error fetching bid");
+			} finally {
+				setLoading(false);
+			}
+		};
 
-	useEffect(
-		() => {
-			fetchBid();
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[bidId]
-	);
+		fetchBid();
+	}, [bidId]);
 
 	if (errorMsg !== null) {
 		return <div>{errorMsg}</div>;
@@ -81,10 +77,12 @@ const BidDetail = () => {
 						<p>{bid.description}</p>
 					</div>
 
-					<div className="cover-letter">
-						<h3>Cover Letter: </h3>
-						<p>{bid.cover_letter}</p>
-					</div>
+					{bid.cover_letter && (
+						<div className="cover-letter">
+							<h3>Cover Letter: </h3>
+							<p>{bid.cover_letter}</p>
+						</div>
+					)}
 				</div>
 			</div>
 		</main>

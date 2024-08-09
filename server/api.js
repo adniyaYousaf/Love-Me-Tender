@@ -21,7 +21,7 @@ const allowlist = {
 		"/bidder-bid": "token",
 		"/tenders": "token",
 		"/bid": "token",
-		"/bid-detail": "token",
+		"/bid/:id": "token",
 	},
 };
 
@@ -817,39 +817,70 @@ router.post("/logout", async (req, res) => {
 	}
 });
 
-router.get("/bid-detail/:id", async (req, res) => {
+router.get("/bid/:id", async (req, res) => {
+	const user = req.user;
 	const bidId = req.params.id;
 
 	try {
-		const result = await db.query(
-			`SELECT 
-          b.bid_id, 
-          b.tender_id, 
-          b.bidding_amount, 
-          b.status, 
-          b.bidding_date AS submission_date, 
-          b.suggested_duration_days, 
-          t.title, 
-          t.announcement_date, 
-          t.closing_date, 
-          b.cover_letter, 
-          t.status AS tender_status, 
-          t.description
-       FROM 
-          bid b
-       JOIN 
-          tender t ON b.tender_id = t.id
-       WHERE 
-          b.bid_id = $1
-      `,
-			[bidId]
-		);
+		if (user.user_type === "bidder") {
+			const bidderQuery = `
+      SELECT 
+        b.bid_id, 
+        b.tender_id, 
+        b.bidding_amount, 
+        b.status, 
+        b.bidding_date AS submission_date, 
+        b.suggested_duration_days, 
+        t.title, 
+        t.announcement_date, 
+        t.closing_date, 
+        b.cover_letter, 
+        t.status AS tender_status, 
+        t.description
+      FROM 
+        bid b
+      JOIN 
+        tender t ON b.tender_id = t.id
+      WHERE 
+        b.bid_id = $1 AND b.bidder_id = $2
+    `;
 
-		if (result.rows.length === 0) {
-			return res.status(404).json({ code: "BID_NOT_FOUND" });
+			const bidderResult = await db.query(bidderQuery, [bidId, user.id]);
+
+			if (bidderResult.rows.length > 0) {
+				return res.status(200).json({ resource: bidderResult.rows[0] });
+			}
 		}
 
-		res.status(200).json(result.rows[0]);
+		if (user.user_type === "buyer") {
+			const buyerQuery = `
+      SELECT 
+        b.bid_id, 
+        b.tender_id, 
+        b.bidding_amount, 
+        b.status, 
+        b.bidding_date AS submission_date, 
+        b.suggested_duration_days, 
+        t.title, 
+        t.announcement_date, 
+        t.closing_date, 
+        b.cover_letter, 
+        t.status AS tender_status, 
+        t.description
+      FROM 
+        bid b
+      JOIN 
+        tender t ON b.tender_id = t.id
+      WHERE 
+        b.bid_id = $1 AND t.buyer_id = $2
+    `;
+			const buyerResult = await db.query(buyerQuery, [bidId, user.id]);
+
+			if (buyerResult.rows.length > 0) {
+				return res.status(200).json({ resource: buyerResult.rows[0] });
+			}
+		}
+		return res.status(403).json({ code: "FORBIDDEN" });
 	} catch (error) {
 		res.status(500).json({ code: "SERVER_ERROR" });
 	}
