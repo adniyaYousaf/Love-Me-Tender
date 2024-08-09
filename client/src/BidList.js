@@ -48,20 +48,20 @@ const BuyerTenderList = () => {
 	};
 
 	const handleRejectBid = async (bidId) => {
-		const confirmWithdrawal = window.confirm(
+		const confirmation = window.confirm(
 			"Are you sure you want to Reject this bid ?"
 		);
-		if (!confirmWithdrawal) {
+		if (!confirmation) {
 			return;
 		}
 		await handleBidStatusChange(bidId, "Rejected");
 	};
 
 	const handleAcceptBid = async (bidId) => {
-		const confirmWithdrawal = window.confirm(
+		const confirmation = window.confirm(
 			"Are you sure you want to Award this bid ?"
 		);
-		if (!confirmWithdrawal) {
+		if (!confirmation) {
 			return;
 		}
 		await handleBidStatusChange(bidId, "Awarded");
