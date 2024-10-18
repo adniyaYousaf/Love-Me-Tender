@@ -115,7 +115,6 @@ function generateRandomPassword(length = 12) {
 	for (let i = 4; i < length; i++) {
 		password += allChars.charAt(Math.floor(Math.random() * allChars.length));
 	}
-	console.log(password);
 	return password;
 }
 
@@ -345,13 +344,13 @@ router.get("/buyer-tender", async (req, res) => {
 
 	result
 		? res.send({
-			results: result.rows,
-			pagination: {
-				itemsPerPage: itemsPerPage,
-				currentPage: page,
-				totalPages: totalPages,
-			},
-		})
+				results: result.rows,
+				pagination: {
+					itemsPerPage: itemsPerPage,
+					currentPage: page,
+					totalPages: totalPages,
+				},
+		  })
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
