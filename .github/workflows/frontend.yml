@@ -48,4 +48,4 @@ jobs:
         with:
           path: dist/static
       - name: deploy to s3
-        run: aws s3 sync dist/static s3://${{secrets.AWS_CONTENT_S3_BUCKET}}
+        run: aws s3 sync dist/static/ s3://${{secrets.AWS_CONTENT_S3_BUCKET}}
