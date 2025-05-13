@@ -1,0 +1,41 @@
+name: deploy frontend
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    permissions:
+      id-tokens: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: npm ci
+      - name: lint the code
+        run: npm run lint
+      - name: build the code
+        run: npm run build
+
+  deploy:
+    permissions:
+      id-tokens: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: npm ci
+      - name: lint the code
+        run: npm run lint
+      - name: install aws CLI
+        uses: actions/configure-aws-credentials@v2
+        with:
+          aws-access-id: ${{secret.AWS_ACCESS_KEY_ID}}
+          aws-access-secret-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: eu-north-1
+      - name: deploy to s3
+        run: aws s3 sync client/dist s3://${{secrets.AWS_CONTENT_S3_BUCKET}}
