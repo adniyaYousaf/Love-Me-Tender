@@ -20,6 +20,7 @@ jobs:
         run: npm run build
 
   deploy:
+    needs: build
     permissions:
       id-token: write
       contents: read
@@ -38,4 +39,4 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: eu-north-1
       - name: deploy to s3
-        run: aws s3 sync dist s3://${{secrets.AWS_CONTENT_S3_BUCKET}}
+        run: aws s3 sync ../dist/static s3://${{secrets.AWS_CONTENT_S3_BUCKET}}
