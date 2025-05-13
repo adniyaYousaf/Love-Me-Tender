@@ -354,6 +354,12 @@ router.get("/buyer-tender", async (req, res) => {
 		: res.status(500).send({ code: "SERVER_ERROR" });
 });
 
+/* eslint-disable no-console */
+
+bcrypt.hash("Admin@1234", 10).then((hash) => {
+	console.log(hash);
+});
+
 router.get("/bidder-bid", async (req, res) => {
 	const bidderId = req.user.id;
 	const page = parseInt(req.query.page, 10) || 1;

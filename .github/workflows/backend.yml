@@ -1,0 +1,43 @@
+name: deploy frontend
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: DATABASE_URL
+    steps:
+      - name: Get the Code
+        uses: actions/checkout@v3
+      - name: install dependencies
+        run: npm ci
+        working-directory: server
+      - name: lint the code
+        run: npm run lint
+      - name: connect to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu
+            if [ ! -d "Love-Me-Tender" ];
+            then
+            git clone https://github.com/adniyaYousaf/Love-Me-Tender.git
+            fi
+            sudo apt update
+            sudo apt install -y nodejs npm
+            cd Love-Me-Tender
+            git pull 
+            cd client
+            npm install 
+            npm run build 
+            cd ../server
+            sudo npm install -g pm2
+            pm2 start npm --name "love-me-tender-server" -- run dev
