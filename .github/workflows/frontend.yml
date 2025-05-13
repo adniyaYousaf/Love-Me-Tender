@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v2
       - name: install dependencies
         run: npm ci
-      - name: lint the code
+      - name: format code
         run: npm run lint
       - name: install aws CLI
         uses: aws-actions/configure-aws-credentials@v2
