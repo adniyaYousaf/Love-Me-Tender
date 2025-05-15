@@ -4,7 +4,7 @@
 		"user": "postgres",
 		"password": "ad6057nya510",
 		"host": "localhost",
-		"database": "lovemetender",
+		"database": "love-me-tender",
 		"port": "5432"
 	},
 	"prod": {
