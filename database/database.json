@@ -2,9 +2,9 @@
 	"dev": {
 		"driver": "pg",
 		"user": "postgres",
-		"password": "opensesame",
+		"password": "ad6057nya510",
 		"host": "localhost",
-		"database": "cyf_tms",
+		"database": "lovemetender",
 		"port": "5432"
 	},
 	"prod": {
